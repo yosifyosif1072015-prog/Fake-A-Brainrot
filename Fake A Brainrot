@@ -1,51 +1,234 @@
--- إنشاء واجهة رسومية بسيطة جداً بزر واحد لـ Fake a Egg
+-- Fake a Egg Advanced GUI with Settings & Dynamic Effects
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local FrameCorner = Instance.new("UICorner")
-local Title = Instance.new("TextLabel")
-local ActiveBtn = Instance.new("TextButton")
-local BtnCorner = Instance.new("UICorner")
 local CloseBtn = Instance.new("TextButton")
 
+-- الصفحات الرئيسية والإعدادات
+local MainTab = Instance.new("Frame")
+local SettingsTab = Instance.new("Frame")
+
+-- عناصر الصفحة الرئيسية
+local Title = Instance.new("TextLabel")
+local ActiveBtn = Instance.new("TextButton")
+local SettingsBtn = Instance.new("TextButton")
+
+-- عناصر صفحة الإعدادات
+local SettingsTitle = Instance.new("TextLabel")
+local LangBtn = Instance.new("TextButton")
+local ColorBtn = Instance.new("TextButton")
+local BackBtn = Instance.new("TextButton")
+
+-- إعدادات الواجهة الأساسية
 ScreenGui.Parent = game.CoreGui
-MainFrame.Name = "FakeAEggRadarGui"
+MainFrame.Name = "XenoAdvancedEggGui"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
-MainFrame.Position = UDim2.new(0.5, -125, 0.4, -50)
-MainFrame.Size = UDim2.new(0, 250, 0, 130)
+MainFrame.Position = UDim2.new(0.5, -140, 0.4, -80)
+MainFrame.Size = UDim2.new(0, 280, 0, 170)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
-FrameCorner.CornerRadius = UDim.new(0, 12)
+FrameCorner.CornerRadius = UDim.new(0, 14)
 FrameCorner.Parent = MainFrame
 
-Title.Parent = MainFrame
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundColor3 = Color3.fromRGB(30, 25, 40)
-Title.Text = "🥚 Fake a Egg | رادار البيض المزيف"
-Title.TextColor3 = Color3.fromRGB(255, 140, 0)
-Title.TextSize = 13
-Title.Font = Enum.Font.SourceSansBold
+-- تأثير الـ RGB المتحرك بسلاسة فائقة للعناوين
+local function applyRGBEffect(textLabel)
+    task.spawn(function()
+        local hue = 0
+        while textLabel and textLabel.Parent do
+            hue = hue + 1
+            if hue > 360 then hue = 0 end
+            textLabel.TextColor3 = Color3.fromHSV(hue/360, 0.7, 1)
+            task.wait(0.02)
+        end
+    end)
+end
 
-local TitleCorner = Instance.new("UICorner", Title)
-TitleCorner.CornerRadius = UDim.new(0, 12)
+-- تأثيرات حركية (Animations) عند الضغط على الأزرار والتنقل
+local TweenService = game:GetService("TweenService")
+local function applyButtonEffects(button)
+    button.MouseEnter:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0.2}):Play()
+    end)
+    button.MouseLeave:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+    end)
+end
 
+-- زر الإغلاق الذكي
 CloseBtn.Parent = MainFrame
-CloseBtn.Position = UDim2.new(0.85, 0, 0, 5)
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(0.88, 0, 0.02, 0)
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
 CloseBtn.Text = "X"
 CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
 CloseBtn.BackgroundTransparency = 1
 CloseBtn.TextSize = 16
 CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.ZIndex = 5
 CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
--- مجلد مستقل لحفظ علامات الرادار منعاً لأي لاغ في السيرفر
+--------------------------------------
+-- [ القائمة الرئيسية ]
+--------------------------------------
+MainTab.Parent = MainFrame
+MainTab.Size = UDim2.new(1, 0, 1, 0)
+MainTab.BackgroundTransparency = 1
+
+Title.Parent = MainTab
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
+Title.Text = "🥚 Fake a Egg | رادار البيض"
+Title.TextSize = 14
+Title.Font = Enum.Font.SourceSansBold
+Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 14)
+applyRGBEffect(Title)
+
+ActiveBtn.Parent = MainTab
+ActiveBtn.Position = UDim2.new(0.05, 0, 0.32, 0)
+ActiveBtn.Size = UDim2.new(0.9, 0, 0, 42)
+ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
+ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+ActiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ActiveBtn.Font = Enum.Font.SourceSansBold
+ActiveBtn.TextSize = 12
+Instance.new("UICorner", ActiveBtn).CornerRadius = UDim.new(0, 8)
+applyButtonEffects(ActiveBtn)
+
+SettingsBtn.Parent = MainTab
+SettingsBtn.Position = UDim2.new(0.05, 0, 0.65, 0)
+SettingsBtn.Size = UDim2.new(0.9, 0, 0, 38)
+SettingsBtn.Text = "⚙️ الإعدادات / Settings"
+SettingsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+SettingsBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
+SettingsBtn.Font = Enum.Font.SourceSansBold
+SettingsBtn.TextSize = 12
+Instance.new("UICorner", SettingsBtn).CornerRadius = UDim.new(0, 8)
+applyButtonEffects(SettingsBtn)
+
+--------------------------------------
+-- [ صفحة الإعدادات ]
+--------------------------------------
+SettingsTab.Parent = MainFrame
+SettingsTab.Size = UDim2.new(1, 0, 1, 0)
+SettingsTab.BackgroundTransparency = 1
+SettingsTab.Visible = false
+
+SettingsTitle.Parent = SettingsTab
+SettingsTitle.Size = UDim2.new(1, 0, 0, 40)
+SettingsTitle.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
+SettingsTitle.Text = "⚙️ الإعدادات | Settings"
+SettingsTitle.TextSize = 14
+SettingsTitle.Font = Enum.Font.SourceSansBold
+Instance.new("UICorner", SettingsTitle).CornerRadius = UDim.new(0, 14)
+applyRGBEffect(SettingsTitle)
+
+LangBtn.Parent = SettingsTab
+LangBtn.Position = UDim2.new(0.05, 0, 0.32, 0)
+LangBtn.Size = UDim2.new(0.42, 0, 0, 38)
+LangBtn.Text = "🌐 اللغة: العربية"
+LangBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 75)
+LangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+LangBtn.Font = Enum.Font.SourceSansBold
+LangBtn.TextSize = 12
+Instance.new("UICorner", LangBtn).CornerRadius = UDim.new(0, 8)
+applyButtonEffects(LangBtn)
+
+ColorBtn.Parent = SettingsTab
+ColorBtn.Position = UDim2.new(0.53, 0, 0.32, 0)
+ColorBtn.Size = UDim2.new(0.42, 0, 0, 38)
+ColorBtn.Text = "🎨 المظهر: داكن"
+ColorBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 75)
+ColorBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ColorBtn.Font = Enum.Font.SourceSansBold
+ColorBtn.TextSize = 12
+Instance.new("UICorner", ColorBtn).CornerRadius = UDim.new(0, 8)
+applyButtonEffects(ColorBtn)
+
+BackBtn.Parent = SettingsTab
+BackBtn.Position = UDim2.new(0.05, 0, 0.65, 0)
+BackBtn.Size = UDim2.new(0.9, 0, 0, 38)
+BackBtn.Text = "🔙 العودة للقائمة الرئيسية"
+BackBtn.BackgroundColor3 = Color3.fromRGB(60, 40, 40)
+BackBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
+BackBtn.Font = Enum.Font.SourceSansBold
+BackBtn.TextSize = 12
+Instance.new("UICorner", BackBtn).CornerRadius = UDim.new(0, 8)
+applyButtonEffects(BackBtn)
+
+--------------------------------------
+-- [ إنيميشن الانتقال السلس بين الصفحات ]
+--------------------------------------
+local function switchTab(toHide, toShow)
+    TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 280, 0, 180)}):Play()
+    toHide.Visible = false
+    toShow.Visible = true
+end
+
+SettingsBtn.MouseButton1Click:Connect(function() switchTab(MainTab, SettingsTab) end)
+BackBtn.MouseButton1Click:Connect(function() switchTab(SettingsTab, MainTab) end)
+
+--------------------------------------
+-- [ نظام تحويل اللغة المستقر ]
+--------------------------------------
+local currentLang = "AR"
+LangBtn.MouseButton1Click:Connect(function()
+    if currentLang == "AR" then
+        currentLang = "EN"
+        LangBtn.Text = "🌐 Lang: English"
+        Title.Text = "🥚 Fake a Egg | Radar"
+        SettingsTitle.Text = "⚙️ Settings"
+        BackBtn.Text = "🔙 Back to Main"
+        ColorBtn.Text = ColorBtn.Text:find("داكن") and "🎨 Theme: Dark" or "🎨 Theme: Neon"
+        if not isRunning then
+            ActiveBtn.Text = "🔍 Scan Disguised Players"
+        else
+            ActiveBtn.Text = "🔓 Scanning Now (Click to Stop)"
+        end
+    else
+        currentLang = "AR"
+        LangBtn.Text = "🌐 اللغة: العربية"
+        Title.Text = "🥚 Fake a Egg | رادار البيض"
+        SettingsTitle.Text = "⚙️ الإعدادات | Settings"
+        BackBtn.Text = "🔙 العودة للقائمة الرئيسية"
+        ColorBtn.Text = ColorBtn.Text:find("Dark") and "🎨 المظهر: داكن" or "🎨 المظهر: نيون ناصع"
+        if not isRunning then
+            ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
+        else
+            ActiveBtn.Text = "🔓 الفحص شغال الحين (اضغط للإلغاء)"
+        end
+    end
+end)
+
+--------------------------------------
+-- [ تحويل ألوان المظهر والـ Themes ]
+--------------------------------------
+local currentTheme = "Dark"
+ColorBtn.MouseButton1Click:Connect(function()
+    if currentTheme == "Dark" then
+        currentTheme = "Neon"
+        MainFrame.BackgroundColor3 = Color3.fromRGB(24, 16, 38)
+        SettingsBtn.BackgroundColor3 = Color3.fromRGB(65, 32, 92)
+        LangBtn.BackgroundColor3 = Color3.fromRGB(78, 38, 112)
+        ColorBtn.BackgroundColor3 = Color3.fromRGB(78, 38, 112)
+        ColorBtn.Text = currentLang == "AR" and "🎨 المظهر: نيون ناصع" or "🎨 Theme: Neon"
+    else
+        currentTheme = "Dark"
+        MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+        SettingsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+        LangBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 75)
+        ColorBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 75)
+        ColorBtn.Text = currentLang == "AR" and "🎨 المظهر: داكن" or "🎨 Theme: Dark"
+    end
+end)
+
+--------------------------------------
+-- [ محرك الرادار والـ ESP المطور ]
+--------------------------------------
 local TargetContainer = workspace:FindFirstChild("XenoPartESPContainer") or Instance.new("Folder")
 TargetContainer.Name = "XenoPartESPContainer"
 TargetContainer.Parent = workspace
 
--- دالة تركيب الرادار فوق موقع اللاعب المخفي ليتعقب حركته
 local function createTargetESP(rootPart, text, color)
     local idName = rootPart:GetDebugId() .. "_PartHider"
     if not TargetContainer:FindFirstChild(idName) then
@@ -53,18 +236,16 @@ local function createTargetESP(rootPart, text, color)
         trackingFolder.Name = idName
         trackingFolder.Parent = TargetContainer
 
-        -- إنشاء هالة كروية حمراء واضحة ونظيفة
         local sphere = Instance.new("SphereHandleAdornment")
         sphere.Name = "SmartSphere"
         sphere.Adornee = rootPart
         sphere.Radius = 3.5
         sphere.Color3 = color
-        sphere.AlwaysOnTop = true -- لكي تراه من خلف كل الجدران والأرضيات
+        sphere.AlwaysOnTop = true
         sphere.ZIndex = 10
         sphere.Transparency = 0.4
         sphere.Parent = trackingFolder
 
-        -- لوحة النص العائمة فوق الرادار
         local billboard = Instance.new("BillboardGui")
         billboard.Name = "SmartLabel"
         billboard.Parent = trackingFolder
@@ -84,69 +265,3 @@ local function createTargetESP(rootPart, text, color)
         label.TextStrokeTransparency = 0
         
         task.spawn(function()
-            while rootPart and rootPart.Parent and trackingFolder and trackingFolder.Parent do task.wait(1) end
-            if trackingFolder then trackingFolder:Destroy() end
-        end)
-    end
-end
-
-local isRunning = false
-local loopThread = nil
-
-ActiveBtn.Parent = MainFrame
-ActiveBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
-ActiveBtn.Size = UDim2.new(0.8, 0, 0, 45)
-ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
-ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
-ActiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ActiveBtn.Font = Enum.Font.SourceSansBold
-ActiveBtn.TextSize = 11
-
-local BtnCorner = Instance.new("UICorner", ActiveBtn)
-BtnCorner.CornerRadius = UDim.new(0, 8)
-
-ActiveBtn.MouseButton1Click:Connect(function()
-    isRunning = not isRunning
-    if isRunning then
-        ActiveBtn.Text = "🔓 الفحص شغال الحين (اضغط للإلغاء)"
-        ActiveBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
-        
-        loopThread = task.spawn(function()
-            while isRunning do
-                -- فحص قائمة جميع حسابات اللاعبين الفعليين المتواجدين في السيرفر
-                for _, player in pairs(game.Players:GetPlayers()) do
-                    if player ~= game.Players.LocalPlayer and player.Character then
-                        local char = player.Character
-                        local rootPart = char:FindFirstChild("HumanoidRootPart")
-                        
-                        -- فحص الأجزاء الثلاثة المحددة التي طلبتها للتأكد من حالة الاختفاء والتنكر
-                        local upperTorso = char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso")
-                        local rightLeg = char:FindFirstChild("RightUpperLeg") or char:FindFirstChild("Right Leg")
-                        local leftHand = char:FindFirstChild("LeftHand") or char:FindFirstChild("Left Arm")
-                        
-                        if rootPart and upperTorso and rightLeg and leftHand then
-                            -- التحقق من الشفافية: إذا كانت هذه الأجزاء مخفية برمجياً وتساوي 1
-                            if upperTorso.Transparency > 0.8 and rightLeg.Transparency > 0.8 and leftHand.Transparency > 0.8 then
-                                -- قفل الرادار الأحمر فوراً فوق إحداثيات موقعه كونه بيضة متحولة
-                                createTargetESP(rootPart, "⚠️ بيضة متنكرة ⚠️", Color3.fromRGB(255, 50, 50))
-                            else
-                                -- إذا عاد لشغله الطبيعي أو لم يكن مخفياً يتم تنظيف علامته الحمراء مباشرة
-                                local idName = rootPart:GetDebugId() .. "_PartHider"
-                                if TargetContainer:FindFirstChild(idName) then
-                                    TargetContainer[idName]:Destroy()
-                                end
-                            end
-                        end
-                    end
-                end
-                task.wait(0.4) -- فحص سريع جداً ومستمر لمواكبة التغيرات اللحظية
-            end
-        end)
-    else
-        ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
-        ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
-        isRunning = false
-        if loopThread then task.cancel(loopThread) end
-        TargetContainer:ClearAllChildren()
-    end
-end)

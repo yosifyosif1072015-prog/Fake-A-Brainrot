@@ -1,5 +1,5 @@
 -- Fake A Brainrot - Final Fixed Script
--- التحقق الحقيقي: إذا كان 3 أجزاء أو أكثر مختفية في جسم اللاعب -> يعتبر متنكر / Fake Egg
+-- Safe UI + scan-speed control + extra color themes
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -28,7 +28,7 @@ MainFrame.Name = "MainFrame"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
 MainFrame.Position = UDim2.new(0.5, -180, 0.4, -110)
-MainFrame.Size = UDim2.new(0, 360, 0, 220)
+MainFrame.Size = UDim2.new(0, 360, 0, 240)
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.ClipsDescendants = true
@@ -163,12 +163,13 @@ local SettingsNavCorner = Instance.new("UICorner")
 SettingsNavCorner.CornerRadius = UDim.new(0, 8)
 SettingsNavCorner.Parent = SettingsNavButton
 
+-- Settings controls
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Parent = SettingsPage
-SpeedLabel.Position = UDim2.new(0.08, 0, 0.08, 0)
+SpeedLabel.Position = UDim2.new(0.08, 0, 0.04, 0)
 SpeedLabel.Size = UDim2.new(0.84, 0, 0, 22)
 SpeedLabel.BackgroundTransparency = 1
-SpeedLabel.Text = "سرعة الفحص: 2.00s"
+SpeedLabel.Text = "سرعة الفحص: 0.10s"
 SpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedLabel.Font = Enum.Font.SourceSansBold
 SpeedLabel.TextSize = 14
@@ -176,12 +177,12 @@ SpeedLabel.ZIndex = 2
 
 local SpeedBox = Instance.new("TextBox")
 SpeedBox.Parent = SettingsPage
-SpeedBox.Position = UDim2.new(0.08, 0, 0.24, 0)
+SpeedBox.Position = UDim2.new(0.08, 0, 0.16, 0)
 SpeedBox.Size = UDim2.new(0.54, 0, 0, 34)
 SpeedBox.BackgroundColor3 = Color3.fromRGB(35, 45, 60)
 SpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedBox.Text = "2.00"
-SpeedBox.PlaceholderText = "2.00"
+SpeedBox.Text = "0.10"
+SpeedBox.PlaceholderText = "0.10"
 SpeedBox.TextSize = 14
 SpeedBox.Font = Enum.Font.SourceSansBold
 SpeedBox.TextXAlignment = Enum.TextXAlignment.Center
@@ -193,7 +194,7 @@ SpeedBoxCorner.Parent = SpeedBox
 
 local ApplySpeedBtn = Instance.new("TextButton")
 ApplySpeedBtn.Parent = SettingsPage
-ApplySpeedBtn.Position = UDim2.new(0.66, 0, 0.24, 0)
+ApplySpeedBtn.Position = UDim2.new(0.66, 0, 0.16, 0)
 ApplySpeedBtn.Size = UDim2.new(0.26, 0, 0, 34)
 ApplySpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 ApplySpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -201,13 +202,56 @@ ApplySpeedBtn.Text = "تطبيق"
 ApplySpeedBtn.Font = Enum.Font.SourceSansBold
 ApplySpeedBtn.TextSize = 12
 ApplySpeedBtn.ZIndex = 2
-local ApplyCorner = Instance.new("UICorner")
-ApplyCorner.CornerRadius = UDim.new(0, 8)
-ApplyCorner.Parent = ApplySpeedBtn
+local ApplySpeedCorner = Instance.new("UICorner")
+ApplySpeedCorner.CornerRadius = UDim.new(0, 8)
+ApplySpeedCorner.Parent = ApplySpeedBtn
+
+local ThemeTitle = Instance.new("TextLabel")
+ThemeTitle.Parent = SettingsPage
+ThemeTitle.Position = UDim2.new(0.08, 0, 0.34, 0)
+ThemeTitle.Size = UDim2.new(0.84, 0, 0, 20)
+ThemeTitle.BackgroundTransparency = 1
+ThemeTitle.Text = "ألوان الواجهة"
+ThemeTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+ThemeTitle.Font = Enum.Font.SourceSansBold
+ThemeTitle.TextSize = 12
+ThemeTitle.ZIndex = 2
+
+local themePresets = {
+    { name = "Midnight", bg = Color3.fromRGB(15, 15, 25), title = Color3.fromRGB(25, 20, 35), accent = Color3.fromRGB(255, 140, 0) },
+    { name = "Sunset", bg = Color3.fromRGB(38, 20, 18), title = Color3.fromRGB(50, 25, 20), accent = Color3.fromRGB(255, 128, 64) },
+    { name = "Violet", bg = Color3.fromRGB(24, 15, 35), title = Color3.fromRGB(35, 25, 50), accent = Color3.fromRGB(170, 120, 255) },
+    { name = "Emerald", bg = Color3.fromRGB(12, 28, 24), title = Color3.fromRGB(18, 40, 32), accent = Color3.fromRGB(20, 200, 120) },
+    { name = "Ocean", bg = Color3.fromRGB(12, 18, 30), title = Color3.fromRGB(18, 30, 42), accent = Color3.fromRGB(70, 170, 255) }
+}
+
+local function createThemeButton(theme, index)
+    local btn = Instance.new("TextButton")
+    btn.Parent = SettingsPage
+    btn.Position = UDim2.new(0.08 + ((index - 1) % 3) * 0.27, 0, 0.42 + math.floor((index - 1) / 3) * 0.14, 0)
+    btn.Size = UDim2.new(0.22, 0, 0, 28)
+    btn.BackgroundColor3 = theme.accent
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.Text = theme.name
+    btn.TextSize = 10
+    btn.ZIndex = 2
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 7)
+    btnCorner.Parent = btn
+
+    btn.MouseButton1Click:Connect(function()
+        applyTheme(theme)
+    end)
+end
+
+for i, theme in ipairs(themePresets) do
+    createThemeButton(theme, i)
+end
 
 local LangButton = Instance.new("TextButton")
 LangButton.Parent = SettingsPage
-LangButton.Position = UDim2.new(0.08, 0, 0.5, 0)
+LangButton.Position = UDim2.new(0.08, 0, 0.72, 0)
 LangButton.Size = UDim2.new(0.84, 0, 0, 34)
 LangButton.BackgroundColor3 = Color3.fromRGB(100, 60, 150)
 LangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -218,22 +262,9 @@ local LangCorner = Instance.new("UICorner")
 LangCorner.CornerRadius = UDim.new(0, 6)
 LangCorner.Parent = LangButton
 
-local ColorButton = Instance.new("TextButton")
-ColorButton.Parent = SettingsPage
-ColorButton.Position = UDim2.new(0.08, 0, 0.7, 0)
-ColorButton.Size = UDim2.new(0.84, 0, 0, 34)
-ColorButton.BackgroundColor3 = Color3.fromRGB(200, 110, 0)
-ColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ColorButton.Font = Enum.Font.SourceSansBold
-ColorButton.TextSize = 14
-ColorButton.ZIndex = 2
-local ColorCorner = Instance.new("UICorner")
-ColorCorner.CornerRadius = UDim.new(0, 6)
-ColorCorner.Parent = ColorButton
-
 local BackButton = Instance.new("TextButton")
 BackButton.Parent = SettingsPage
-BackButton.Position = UDim2.new(0.08, 0, 0.86, 0)
+BackButton.Position = UDim2.new(0.08, 0, 0.88, 0)
 BackButton.Size = UDim2.new(0.84, 0, 0, 34)
 BackButton.BackgroundColor3 = Color3.fromRGB(140, 35, 35)
 BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -249,10 +280,24 @@ local isRunning = false
 local detectionThread = nil
 
 local Config = {
-    ScanInterval = 2.0,
+    ScanInterval = 0.1,
     MinInterval = 0.1,
     MaxInterval = 50.0
 }
+
+local ActiveTheme = {
+    bg = Color3.fromRGB(15, 15, 25),
+    title = Color3.fromRGB(25, 20, 35),
+    accent = Color3.fromRGB(255, 140, 0)
+}
+
+local function applyTheme(theme)
+    ActiveTheme = theme
+    MainFrame.BackgroundColor3 = theme.bg
+    Title.BackgroundColor3 = theme.title
+    UIStroke.Color = theme.accent
+    ActiveBtn.BackgroundColor3 = isRunning and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(180, 50, 50)
+end
 
 local function updateLocalization()
     if isArabic then
@@ -266,8 +311,8 @@ local function updateLocalization()
         SpeedLabel.Text = "سرعة الفحص: " .. string.format("%.2fs", Config.ScanInterval)
         SpeedBox.Text = string.format("%.2f", Config.ScanInterval)
         ApplySpeedBtn.Text = "تطبيق"
+        ThemeTitle.Text = "ألوان الواجهة"
         LangButton.Text = "🌐 تغيير اللغة إلى: English"
-        ColorButton.Text = "🎨 تغيير لون المظهر"
         BackButton.Text = "⬅️ العودة"
     else
         Title.Text = "🥚 Fake a Egg | Fake Egg Radar"
@@ -280,8 +325,8 @@ local function updateLocalization()
         SpeedLabel.Text = "Scan Speed: " .. string.format("%.2fs", Config.ScanInterval)
         SpeedBox.Text = string.format("%.2f", Config.ScanInterval)
         ApplySpeedBtn.Text = "Apply"
+        ThemeTitle.Text = "Theme Colors"
         LangButton.Text = "🌐 Change language to: العربية"
-        ColorButton.Text = "🎨 Change theme color"
         BackButton.Text = "⬅️ Back"
     end
 end
@@ -329,7 +374,6 @@ end
 applyClickEffect(ActiveBtn)
 applyClickEffect(SettingsNavButton)
 applyClickEffect(LangButton)
-applyClickEffect(ColorButton)
 applyClickEffect(BackButton)
 applyClickEffect(CloseBtn)
 applyClickEffect(ApplySpeedBtn)
@@ -524,18 +568,6 @@ LangButton.MouseButton1Click:Connect(function()
     updateLocalization()
 end)
 
-ColorButton.MouseButton1Click:Connect(function()
-    if MainFrame.BackgroundColor3 == Color3.fromRGB(15, 15, 25) then
-        MainFrame.BackgroundColor3 = Color3.fromRGB(24, 15, 35)
-        Title.BackgroundColor3 = Color3.fromRGB(35, 25, 50)
-        ActiveBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
-    else
-        MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-        Title.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
-        ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
-    end
-end)
-
 ApplySpeedBtn.MouseButton1Click:Connect(function()
     setScanSpeed(SpeedBox.Text)
 end)
@@ -544,4 +576,5 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
+applyTheme(themePresets[1])
 updateLocalization()

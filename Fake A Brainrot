@@ -1,271 +1,152 @@
--- Fake a Egg - Full UI Final
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-
-local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer and LocalPlayer:WaitForChild("PlayerGui")
-
-if not LocalPlayer or not PlayerGui then
-    return
-end
-
-if PlayerGui:FindFirstChild("FakeAEggMainGui") then
-    PlayerGui.FakeAEggMainGui:Destroy()
-end
-
+-- إنشاء واجهة رسومية بسيطة جداً بزر واحد لـ Fake a Egg
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "FakeAEggMainGui"
-ScreenGui.Parent = PlayerGui
-ScreenGui.ResetOnSpawn = false
-ScreenGui.IgnoreGuiInset = true
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
 local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
+local FrameCorner = Instance.new("UICorner")
+local Title = Instance.new("TextLabel")
+local ActiveBtn = Instance.new("TextButton")
+local BtnCorner = Instance.new("UICorner")
+local CloseBtn = Instance.new("TextButton")
+
+ScreenGui.Parent = game.CoreGui
+MainFrame.Name = "FakeAEggRadarGui"
 MainFrame.Parent = ScreenGui
-MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 24)
-MainFrame.Position = UDim2.new(0.5, -200, 0.45, -110)
-MainFrame.Size = UDim2.new(0, 400, 0, 200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+MainFrame.Position = UDim2.new(0.5, -125, 0.4, -50)
+MainFrame.Size = UDim2.new(0, 250, 0, 130)
 MainFrame.Active = true
 MainFrame.Draggable = true
-MainFrame.BorderSizePixel = 0
-MainFrame.ClipsDescendants = true
 
-local OrangeBorder = Instance.new("UIStroke")
-OrangeBorder.Parent = MainFrame
-OrangeBorder.Color = Color3.fromRGB(255, 140, 0)
-OrangeBorder.Thickness = 3
-OrangeBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-local FrameCorner = Instance.new("UICorner")
 FrameCorner.CornerRadius = UDim.new(0, 12)
 FrameCorner.Parent = MainFrame
 
-local Header = Instance.new("Frame")
-Header.Parent = MainFrame
-Header.Size = UDim2.new(1, 0, 0, 44)
-Header.BackgroundTransparency = 1
-Header.Position = UDim2.new(0, 0, 0, 0)
-
-local EggIcon = Instance.new("TextLabel")
-EggIcon.Parent = Header
-EggIcon.Position = UDim2.new(0.05, 0, 0.15, 0)
-EggIcon.Size = UDim2.new(0, 16, 0, 16)
-EggIcon.BackgroundTransparency = 1
-EggIcon.Text = "◉"
-EggIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-EggIcon.TextSize = 12
-EggIcon.Font = Enum.Font.SourceSansBold
-EggIcon.TextXAlignment = Enum.TextXAlignment.Center
-EggIcon.TextYAlignment = Enum.TextYAlignment.Center
-
-local Title = Instance.new("TextLabel")
-Title.Parent = Header
-Title.Position = UDim2.new(0.14, 0, 0, 0)
-Title.Size = UDim2.new(0.6, 0, 1, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "Fake a Egg"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(30, 25, 40)
+Title.Text = "🥚 Fake a Egg | رادار البيض المزيف"
+Title.TextColor3 = Color3.fromRGB(255, 140, 0)
+Title.TextSize = 13
 Title.Font = Enum.Font.SourceSansBold
-Title.TextSize = 20
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.TextYAlignment = Enum.TextYAlignment.Center
 
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Parent = Header
-CloseBtn.Position = UDim2.new(0.92, 0, 0.12, 0)
-CloseBtn.Size = UDim2.new(0, 22, 0, 22)
-CloseBtn.BackgroundTransparency = 1
+local TitleCorner = Instance.new("UICorner", Title)
+TitleCorner.CornerRadius = UDim.new(0, 12)
+
+CloseBtn.Parent = MainFrame
+CloseBtn.Position = UDim2.new(0.85, 0, 0, 5)
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
 CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
+CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.TextSize = 16
 CloseBtn.Font = Enum.Font.SourceSansBold
-CloseBtn.TextSize = 20
-CloseBtn.BorderSizePixel = 0
+CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
-local function addButton(parent, pos, size, text, bgColor)
-    local btn = Instance.new("TextButton")
-    btn.Parent = parent
-    btn.Position = pos
-    btn.Size = size
-    btn.BackgroundColor3 = bgColor
-    btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 18
-    btn.BorderSizePixel = 0
-    btn.AutoButtonColor = false
+-- مجلد مستقل لحفظ علامات الرادار منعاً لأي لاغ في السيرفر
+local TargetContainer = workspace:FindFirstChild("XenoPartESPContainer") or Instance.new("Folder")
+TargetContainer.Name = "XenoPartESPContainer"
+TargetContainer.Parent = workspace
 
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, 12)
-    c.Parent = btn
+-- دالة تركيب الرادار فوق موقع اللاعب المخفي ليتعقب حركته
+local function createTargetESP(rootPart, text, color)
+    local idName = rootPart:GetDebugId() .. "_PartHider"
+    if not TargetContainer:FindFirstChild(idName) then
+        local trackingFolder = Instance.new("Folder")
+        trackingFolder.Name = idName
+        trackingFolder.Parent = TargetContainer
 
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 255, 255)
-    stroke.Transparency = 0.35
-    stroke.Thickness = 1
-    stroke.Parent = btn
+        -- إنشاء هالة كروية حمراء واضحة ونظيفة
+        local sphere = Instance.new("SphereHandleAdornment")
+        sphere.Name = "SmartSphere"
+        sphere.Adornee = rootPart
+        sphere.Radius = 3.5
+        sphere.Color3 = color
+        sphere.AlwaysOnTop = true -- لكي تراه من خلف كل الجدران والأرضيات
+        sphere.ZIndex = 10
+        sphere.Transparency = 0.4
+        sphere.Parent = trackingFolder
 
-    return btn
-end
+        -- لوحة النص العائمة فوق الرادار
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "SmartLabel"
+        billboard.Parent = trackingFolder
+        billboard.Size = UDim2.new(0, 180, 0, 45)
+        billboard.Adornee = rootPart
+        billboard.AlwaysOnTop = true
+        billboard.StudsOffset = Vector3.new(0, 5, 0)
 
-local Pages = {}
-
-local MainPage = Instance.new("Frame")
-MainPage.Name = "MainPage"
-MainPage.Parent = MainFrame
-MainPage.Size = UDim2.new(1, 0, 1, -44)
-MainPage.Position = UDim2.new(0, 0, 0, 44)
-MainPage.BackgroundColor3 = Color3.fromRGB(15, 15, 24)
-MainPage.BorderSizePixel = 0
-MainPage.Visible = true
-Pages.Main = MainPage
-
-local StartBtn = addButton(MainPage, UDim2.new(0.08, 0, 0.16, 0), UDim2.new(0.84, 0, 0, 56), "Start", Color3.fromRGB(28, 180, 92))
-StartBtn.TextSize = 22
-
-local SettingsBtn = addButton(MainPage, UDim2.new(0.08, 0, 0.54, 0), UDim2.new(0.84, 0, 0, 56), "Settings", Color3.fromRGB(90, 90, 100))
-SettingsBtn.TextSize = 20
-
-local StartPage = Instance.new("Frame")
-StartPage.Name = "StartPage"
-StartPage.Parent = MainFrame
-StartPage.Size = UDim2.new(1, 0, 1, -44)
-StartPage.Position = UDim2.new(0, 0, 0, 44)
-StartPage.BackgroundColor3 = Color3.fromRGB(15, 15, 24)
-StartPage.BorderSizePixel = 0
-StartPage.Visible = false
-Pages.Start = StartPage
-
-local FeaturesTitle = Instance.new("TextLabel")
-FeaturesTitle.Parent = StartPage
-FeaturesTitle.Size = UDim2.new(0.8, 0, 0, 28)
-FeaturesTitle.Position = UDim2.new(0.1, 0, 0.08, 0)
-FeaturesTitle.BackgroundTransparency = 1
-FeaturesTitle.Text = "Features"
-FeaturesTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-FeaturesTitle.Font = Enum.Font.SourceSansBold
-FeaturesTitle.TextSize = 18
-FeaturesTitle.TextXAlignment = Enum.TextXAlignment.Center
-
-local DetectionBtn = addButton(StartPage, UDim2.new(0.1, 0, 0.22, 0), UDim2.new(0.8, 0, 0, 34), "Detection ON", Color3.fromRGB(25, 170, 90))
-DetectionBtn.TextSize = 16
-
-local SpeedBtn = addButton(StartPage, UDim2.new(0.1, 0, 0.44, 0), UDim2.new(0.8, 0, 0, 34), "Speed", Color3.fromRGB(112, 92, 200))
-SpeedBtn.TextSize = 16
-
-local FlightBtn = addButton(StartPage, UDim2.new(0.1, 0, 0.62, 0), UDim2.new(0.8, 0, 0, 34), "Flight", Color3.fromRGB(70, 110, 255))
-FlightBtn.TextSize = 16
-
-local GravityBtn = addButton(StartPage, UDim2.new(0.1, 0, 0.80, 0), UDim2.new(0.8, 0, 0, 34), "Gravity", Color3.fromRGB(220, 120, 35))
-GravityBtn.TextSize = 16
-
-local StartBackBtn = addButton(StartPage, UDim2.new(0.1, 0, 0.92, 0), UDim2.new(0.8, 0, 0, 24), "Back", Color3.fromRGB(140, 35, 35))
-StartBackBtn.TextSize = 13
-
-local SettingsPage = Instance.new("Frame")
-SettingsPage.Name = "SettingsPage"
-SettingsPage.Parent = MainFrame
-SettingsPage.Size = UDim2.new(1, 0, 1, -44)
-SettingsPage.Position = UDim2.new(0, 0, 0, 44)
-SettingsPage.BackgroundColor3 = Color3.fromRGB(15, 15, 24)
-SettingsPage.BorderSizePixel = 0
-SettingsPage.Visible = false
-Pages.Settings = SettingsPage
-
-local SettingsTitle = Instance.new("TextLabel")
-SettingsTitle.Parent = SettingsPage
-SettingsTitle.Size = UDim2.new(0.8, 0, 0, 28)
-SettingsTitle.Position = UDim2.new(0.1, 0, 0.08, 0)
-SettingsTitle.BackgroundTransparency = 1
-SettingsTitle.Text = "Settings"
-SettingsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-SettingsTitle.Font = Enum.Font.SourceSansBold
-SettingsTitle.TextSize = 18
-SettingsTitle.TextXAlignment = Enum.TextXAlignment.Center
-
-local LangBtn = addButton(SettingsPage, UDim2.new(0.1, 0, 0.28, 0), UDim2.new(0.8, 0, 0, 32), "Language", Color3.fromRGB(110, 70, 180))
-LangBtn.TextSize = 15
-
-local ThemeBtn = addButton(SettingsPage, UDim2.new(0.1, 0, 0.5, 0), UDim2.new(0.8, 0, 0, 32), "Theme", Color3.fromRGB(200, 120, 0))
-ThemeBtn.TextSize = 15
-
-local SettingsBackBtn = addButton(SettingsPage, UDim2.new(0.1, 0, 0.78, 0), UDim2.new(0.8, 0, 0, 30), "Back", Color3.fromRGB(140, 35, 35))
-SettingsBackBtn.TextSize = 15
-
-local function switchPage(pageName)
-    for _, page in pairs(Pages) do
-        page.Visible = false
+        local label = Instance.new("TextLabel")
+        label.Parent = billboard
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = color
+        label.TextSize = 15
+        label.Font = Enum.Font.SourceSansBold
+        label.TextStrokeTransparency = 0
+        
+        task.spawn(function()
+            while rootPart and rootPart.Parent and trackingFolder and trackingFolder.Parent do task.wait(1) end
+            if trackingFolder then trackingFolder:Destroy() end
+        end)
     end
-    Pages[pageName].Visible = true
 end
 
-local function animatePress(btn)
-    local originalSize = btn.Size
-    btn.MouseButton1Down:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
-            Size = originalSize - UDim2.new(0, 8, 0, 4)
-        }):Play()
-    end)
-    btn.MouseButton1Up:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
-            Size = originalSize
-        }):Play()
-    end)
-end
+local isRunning = false
+local loopThread = nil
 
-for _, btn in ipairs({
-    StartBtn, SettingsBtn,
-    DetectionBtn, SpeedBtn, FlightBtn, GravityBtn, StartBackBtn,
-    LangBtn, ThemeBtn, SettingsBackBtn
-}) do
-    animatePress(btn)
-end
+ActiveBtn.Parent = MainFrame
+ActiveBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
+ActiveBtn.Size = UDim2.new(0.8, 0, 0, 45)
+ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
+ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+ActiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ActiveBtn.Font = Enum.Font.SourceSansBold
+ActiveBtn.TextSize = 11
 
-animatePress(CloseBtn)
+local BtnCorner = Instance.new("UICorner", ActiveBtn)
+BtnCorner.CornerRadius = UDim.new(0, 8)
 
-CloseBtn.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
+ActiveBtn.MouseButton1Click:Connect(function()
+    isRunning = not isRunning
+    if isRunning then
+        ActiveBtn.Text = "🔓 الفحص شغال الحين (اضغط للإلغاء)"
+        ActiveBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        
+        loopThread = task.spawn(function()
+            while isRunning do
+                -- فحص قائمة جميع حسابات اللاعبين الفعليين المتواجدين في السيرفر
+                for _, player in pairs(game.Players:GetPlayers()) do
+                    if player ~= game.Players.LocalPlayer and player.Character then
+                        local char = player.Character
+                        local rootPart = char:FindFirstChild("HumanoidRootPart")
+                        
+                        -- فحص الأجزاء الثلاثة المحددة التي طلبتها للتأكد من حالة الاختفاء والتنكر
+                        local upperTorso = char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso")
+                        local rightLeg = char:FindFirstChild("RightUpperLeg") or char:FindFirstChild("Right Leg")
+                        local leftHand = char:FindFirstChild("LeftHand") or char:FindFirstChild("Left Arm")
+                        
+                        if rootPart and upperTorso and rightLeg and leftHand then
+                            -- التحقق من الشفافية: إذا كانت هذه الأجزاء مخفية برمجياً وتساوي 1
+                            if upperTorso.Transparency > 0.8 and rightLeg.Transparency > 0.8 and leftHand.Transparency > 0.8 then
+                                -- قفل الرادار الأحمر فوراً فوق إحداثيات موقعه كونه بيضة متحولة
+                                createTargetESP(rootPart, "⚠️ بيضة متنكرة ⚠️", Color3.fromRGB(255, 50, 50))
+                            else
+                                -- إذا عاد لشغله الطبيعي أو لم يكن مخفياً يتم تنظيف علامته الحمراء مباشرة
+                                local idName = rootPart:GetDebugId() .. "_PartHider"
+                                if TargetContainer:FindFirstChild(idName) then
+                                    TargetContainer[idName]:Destroy()
+                                end
+                            end
+                        end
+                    end
+                end
+                task.wait(0.4) -- فحص سريع جداً ومستمر لمواكبة التغيرات اللحظية
+            end
+        end)
+    else
+        ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
+        ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+        isRunning = false
+        if loopThread then task.cancel(loopThread) end
+        TargetContainer:ClearAllChildren()
+    end
 end)
-
-StartBtn.MouseButton1Click:Connect(function()
-    switchPage("Start")
-end)
-
-SettingsBtn.MouseButton1Click:Connect(function()
-    switchPage("Settings")
-end)
-
-StartBackBtn.MouseButton1Click:Connect(function()
-    switchPage("Main")
-end)
-
-SettingsBackBtn.MouseButton1Click:Connect(function()
-    switchPage("Main")
-end)
-
-DetectionBtn.MouseButton1Click:Connect(function()
-    DetectionBtn.Text = DetectionBtn.Text == "Detection ON" and "Detection OFF" or "Detection ON"
-    DetectionBtn.BackgroundColor3 = DetectionBtn.Text == "Detection ON" and Color3.fromRGB(25, 170, 90) or Color3.fromRGB(90, 90, 100)
-end)
-
-SpeedBtn.MouseButton1Click:Connect(function()
-    SpeedBtn.BackgroundColor3 = Color3.fromRGB(30, 180, 110)
-end)
-
-FlightBtn.MouseButton1Click:Connect(function()
-    FlightBtn.BackgroundColor3 = Color3.fromRGB(35, 120, 255)
-end)
-
-GravityBtn.MouseButton1Click:Connect(function()
-    GravityBtn.BackgroundColor3 = Color3.fromRGB(220, 150, 50)
-end)
-
-LangBtn.MouseButton1Click:Connect(function()
-    LangBtn.Text = "Language: Arabic"
-end)
-
-ThemeBtn.MouseButton1Click:Connect(function()
-    ThemeBtn.Text = "Theme: Neon"
-end)
-
-switchPage("Main")

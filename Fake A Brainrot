@@ -1,6 +1,12 @@
 -- تحسين مسار التشغيل لضمان عمله على Xeno وتجنب مشاكل الحظر
-local Player = game:GetService("Players").LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer and LocalPlayer:WaitForChild("PlayerGui")
+
+if not LocalPlayer or not PlayerGui then
+    return
+end
 
 -- حذف النسخة القديمة إذا كانت موجودة لمنع التكرار
 if PlayerGui:FindFirstChild("FakeAEggXenoGui") then
@@ -11,6 +17,8 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FakeAEggXenoGui"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -20,7 +28,7 @@ MainFrame.Position = UDim2.new(0.5, -180, 0.4, -110)
 MainFrame.Size = UDim2.new(0, 360, 0, 220)
 MainFrame.Active = true
 MainFrame.Draggable = true
-MainFrame.ClipsDescendants = true -- مهم جداً لكي لا تخرج النجوم عن إطار اللوحة
+MainFrame.ClipsDescendants = true
 
 local FrameCorner = Instance.new("UICorner")
 FrameCorner.CornerRadius = UDim.new(0, 14)
@@ -39,54 +47,54 @@ StarsContainer.Name = "StarsContainer"
 StarsContainer.Parent = MainFrame
 StarsContainer.Size = UDim2.new(1, 0, 1, 0)
 StarsContainer.BackgroundTransparency = 1
-StarsContainer.ZIndex = 1 -- النجوم بالخلفية
+StarsContainer.ZIndex = 1
 
 local function spawnStar()
     local star = Instance.new("TextLabel")
     star.Parent = StarsContainer
     star.BackgroundTransparency = 1
-    star.Text = "✦" -- شكل النجمة
+    star.Text = "✦"
     star.TextColor3 = Color3.fromRGB(255, 255, 255)
     star.TextSize = math.random(8, 14)
     star.Font = Enum.Font.SourceSansBold
     star.ZIndex = 1
-    
-    -- موقع عشوائي في أعلى اللوحة
     star.Position = UDim2.new(math.random(), 0, -0.1, 0)
     star.TextTransparency = 1
-    
-    -- أنيميشن الحركة والتلاشي للأسفل
-    local TweenService = game:GetService("TweenService")
+
     local duration = math.random(3, 6)
-    
     local fallTween = TweenService:Create(star, TweenInfo.new(duration, Enum.EasingStyle.Linear), {
         Position = UDim2.new(star.Position.X.Scale, 0, 1.1, 0)
     })
-    local fadeInTween = TweenService:Create(star, TweenInfo.new(0.5), {TextTransparency = 0.3})
-    local fadeOutTween = TweenService:Create(star, TweenInfo.new(0.5), {TextTransparency = 1})
-    
+    local fadeInTween = TweenService:Create(star, TweenInfo.new(0.5), {
+        TextTransparency = 0.3
+    })
+    local fadeOutTween = TweenService:Create(star, TweenInfo.new(0.5), {
+        TextTransparency = 1
+    })
+
     fadeInTween:Play()
     fallTween:Play()
-    
+
     task.delay(duration - 0.5, function()
         fadeOutTween:Play()
     end)
-    
+
     fallTween.Completed:Connect(function()
-        star:Destroy()
+        if star and star.Parent then
+            star:Destroy()
+        end
     end)
 end
 
--- تشغيل منشئ النجوم التلقائي
-local starLoop = task.spawn(function()
-    while true do
+local starThread = task.spawn(function()
+    while ScreenGui.Parent do
         spawnStar()
-        task.wait(0.4) -- تخرج نجمة جديدة كل جزء من الثانية
+        task.wait(0.4)
     end
 end)
 
 -- ==========================================
--- [عناصر الواجهة والأزرار فوق الخلفية]
+-- [عناصر الواجهة والأزراب فوق الخلفية]
 -- ==========================================
 local Title = Instance.new("TextLabel")
 Title.Parent = MainFrame
@@ -96,6 +104,8 @@ Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.SourceSansBold
 Title.ZIndex = 2
+Title.TextXAlignment = Enum.TextXAlignment.Center
+Title.TextYAlignment = Enum.TextYAlignment.Center
 
 local TitleCorner = Instance.new("UICorner", Title)
 TitleCorner.CornerRadius = UDim.new(0, 14)
@@ -128,7 +138,8 @@ ActiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ActiveBtn.Font = Enum.Font.SourceSansBold
 ActiveBtn.TextSize = 14
 ActiveBtn.ZIndex = 2
-Instance.new("UICorner", ActiveBtn).CornerRadius = UDim.new(0, 8)
+local ActiveBtnCorner = Instance.new("UICorner", ActiveBtn)
+ActiveBtnCorner.CornerRadius = UDim.new(0, 8)
 
 local SettingsNavButton = Instance.new("TextButton")
 SettingsNavButton.Parent = MainPage
@@ -139,7 +150,8 @@ SettingsNavButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 SettingsNavButton.Font = Enum.Font.SourceSansBold
 SettingsNavButton.TextSize = 14
 SettingsNavButton.ZIndex = 2
-Instance.new("UICorner", SettingsNavButton).CornerRadius = UDim.new(0, 8)
+local SettingsNavCorner = Instance.new("UICorner", SettingsNavButton)
+SettingsNavCorner.CornerRadius = UDim.new(0, 8)
 
 -- صفحة الإعدادات
 local SettingsPage = Instance.new("Frame")
@@ -159,7 +171,8 @@ LangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 LangButton.Font = Enum.Font.SourceSansBold
 LangButton.TextSize = 14
 LangButton.ZIndex = 2
-Instance.new("UICorner", LangButton).CornerRadius = UDim.new(0, 6)
+local LangButtonCorner = Instance.new("UICorner", LangButton)
+LangButtonCorner.CornerRadius = UDim.new(0, 6)
 
 local ColorButton = Instance.new("TextButton")
 ColorButton.Parent = SettingsPage
@@ -170,7 +183,8 @@ ColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 ColorButton.Font = Enum.Font.SourceSansBold
 ColorButton.TextSize = 14
 ColorButton.ZIndex = 2
-Instance.new("UICorner", ColorButton).CornerRadius = UDim.new(0, 6)
+local ColorButtonCorner = Instance.new("UICorner", ColorButton)
+ColorButtonCorner.CornerRadius = UDim.new(0, 6)
 
 local BackButton = Instance.new("TextButton")
 BackButton.Parent = SettingsPage
@@ -181,7 +195,8 @@ BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 BackButton.Font = Enum.Font.SourceSansBold
 BackButton.TextSize = 14
 BackButton.ZIndex = 2
-Instance.new("UICorner", BackButton).CornerRadius = UDim.new(0, 6)
+local BackButtonCorner = Instance.new("UICorner", BackButton)
+BackButtonCorner.CornerRadius = UDim.new(0, 6)
 
 -- ==========================================
 -- [نظام اللغات والترجمة]
@@ -193,14 +208,22 @@ local loopThread = nil
 local function updateLocalization()
     if isArabic then
         Title.Text = "🥚 Fake a Egg | رادار البيض المزيف"
-        if not isRunning then ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين" else ActiveBtn.Text = "🔓 الفحص شغال الحين (اضغط للإلغاء)" end
+        if not isRunning then
+            ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
+        else
+            ActiveBtn.Text = "🔓 الفحص شغال الحين (اضغط للإيقاف)"
+        end
         SettingsNavButton.Text = "⚙️ الإعدادات والمظهر"
         LangButton.Text = "🌐 تغيير اللغة إلى: English"
         ColorButton.Text = "🎨 تغيير لون المظهر (Neon Theme)"
         BackButton.Text = "⬅️ عودة للقائمة الرئيسية"
     else
         Title.Text = "🥚 Fake a Egg | Fake Egg Radar"
-        if not isRunning then ActiveBtn.Text = "🔍 Scan & Detect Disguised Fake Eggs" else ActiveBtn.Text = "🔓 Radar Scanning... (Click to Stop)" end
+        if not isRunning then
+            ActiveBtn.Text = "🔍 Scan & Detect Disguised Fake Eggs"
+        else
+            ActiveBtn.Text = "🔓 Radar Scanning... (Click to Stop)"
+        end
         SettingsNavButton.Text = "⚙️ Settings & Themes"
         LangButton.Text = "🌐 Change Language to: العربية"
         ColorButton.Text = "🎨 Change Neon Menu Color"
@@ -211,25 +234,42 @@ end
 -- ==========================================
 -- [أنيميشن التنقل وضغط الأزرار]
 -- ==========================================
-local TweenService = game:GetService("TweenService")
 local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
 local function switchPage(fromPage, toPage, direction)
     toPage.Visible = true
     local toPageTargetPos = UDim2.new(0, 0, 0, 45)
     local fromPageTargetPos = direction == "next" and UDim2.new(-1.2, 0, 0, 45) or UDim2.new(1.2, 0, 0, 45)
-    
-    if direction == "next" then toPage.Position = UDim2.new(1.2, 0, 0, 45) else toPage.Position = UDim2.new(-1.2, 0, 0, 45) end
+
+    if direction == "next" then
+        toPage.Position = UDim2.new(1.2, 0, 0, 45)
+    else
+        toPage.Position = UDim2.new(-1.2, 0, 0, 45)
+    end
+
     TweenService:Create(fromPage, tweenInfo, {Position = fromPageTargetPos}):Play()
     local toTween = TweenService:Create(toPage, tweenInfo, {Position = toPageTargetPos})
     toTween:Play()
-    toTween.Completed:Connect(function() fromPage.Visible = false end)
+    toTween.Completed:Connect(function()
+        if fromPage and fromPage.Parent then
+            fromPage.Visible = false
+        end
+    end)
 end
 
 local function applyClickEffect(button)
     local originalSize = button.Size
-    button.MouseButton1Down:Connect(function() TweenService:Create(button, TweenInfo.new(0.1), {Size = originalSize - UDim2.new(0, 12, 0, 4)}):Play() end)
-    button.MouseButton1Up:Connect(function() TweenService:Create(button, TweenInfo.new(0.1), {Size = originalSize}):Play() end)
+    button.MouseButton1Down:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.1), {
+            Size = originalSize - UDim2.new(0, 12, 0, 4)
+        }):Play()
+    end)
+
+    button.MouseButton1Up:Connect(function()
+        TweenService:Create(button, TweenInfo.new(0.1), {
+            Size = originalSize
+        }):Play()
+    end)
 end
 
 applyClickEffect(ActiveBtn)
@@ -245,20 +285,99 @@ local TargetContainer = workspace:FindFirstChild("XenoPartESPContainer") or Inst
 TargetContainer.Name = "XenoPartESPContainer"
 TargetContainer.Parent = workspace
 
-local function createTargetESP(rootPart, text, color)
-    local idName = rootPart:GetDebugId() .. "_PartHider"
-    if not TargetContainer:FindFirstChild(idName) then
-        local trackingFolder = Instance.new("Folder")
-        trackingFolder.Name = idName
-        trackingFolder.Parent = TargetContainer
+local function createTargetESP(rootPart, color)
+    if not rootPart or not rootPart.Parent then
+        return
+    end
 
-        local sphere = Instance.new("SphereHandleAdornment")
-        sphere.Name = "SmartSphere"
-        sphere.Adornee = rootPart
-        sphere.Radius = 3.5
-        sphere.Color3 = color
-        sphere.AlwaysOnTop = true
-        sphere.ZIndex = 10
-        sphere.Transparency = 0.4
-        sphere.Parent = trackingFolder
+    local idName = tostring(rootPart) .. "_PartHider"
+    if TargetContainer:FindFirstChild(idName) then
+        return
+    end
 
+    local trackingFolder = Instance.new("Folder")
+    trackingFolder.Name = idName
+    trackingFolder.Parent = TargetContainer
+
+    local sphere = Instance.new("SphereHandleAdornment")
+    sphere.Name = "SmartSphere"
+    sphere.Adornee = rootPart
+    sphere.Radius = 3.5
+    sphere.Color3 = color
+    sphere.AlwaysOnTop = true
+    sphere.ZIndex = 10
+    sphere.Transparency = 0.4
+    sphere.Parent = trackingFolder
+end
+
+local function scanForFakeEggs()
+    for _, descendant in ipairs(workspace:GetDescendants()) do
+        if descendant:IsA("BasePart") then
+            local lowerName = descendant.Name:lower()
+            if string.find(lowerName, "egg") or string.find(lowerName, "fake") or string.find(lowerName, "xeno") then
+                createTargetESP(descendant, Color3.fromRGB(255, 140, 0))
+            end
+        end
+    end
+end
+
+local function toggleScan()
+    isRunning = not isRunning
+    if isRunning then
+        if loopThread then
+            task.cancel(loopThread)
+        end
+
+        loopThread = task.spawn(function()
+            while isRunning and ScreenGui.Parent do
+                scanForFakeEggs()
+                task.wait(1)
+            end
+        end)
+    else
+        if loopThread then
+            task.cancel(loopThread)
+            loopThread = nil
+        end
+    end
+
+    updateLocalization()
+end
+
+CloseBtn.MouseButton1Click:Connect(function()
+    if ScreenGui then
+        ScreenGui:Destroy()
+    end
+end)
+
+ActiveBtn.MouseButton1Click:Connect(function()
+    toggleScan()
+end)
+
+SettingsNavButton.MouseButton1Click:Connect(function()
+    switchPage(MainPage, SettingsPage, "next")
+end)
+
+BackButton.MouseButton1Click:Connect(function()
+    switchPage(SettingsPage, MainPage, "back")
+end)
+
+LangButton.MouseButton1Click:Connect(function()
+    isArabic = not isArabic
+    updateLocalization()
+end)
+
+ColorButton.MouseButton1Click:Connect(function()
+    local neonMode = MainFrame.BackgroundColor3 == Color3.fromRGB(15, 15, 25)
+    if neonMode then
+        MainFrame.BackgroundColor3 = Color3.fromRGB(24, 15, 35)
+        Title.BackgroundColor3 = Color3.fromRGB(35, 25, 50)
+        ActiveBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 160)
+    else
+        MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+        Title.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
+        ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+    end
+end)
+
+updateLocalization()

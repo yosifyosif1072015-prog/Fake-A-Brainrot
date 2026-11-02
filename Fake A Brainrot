@@ -1,5 +1,7 @@
--- Fake A Brainrot - UI match to screenshot
--- Main panel only: Start + Settings
+-- Fake A Brainrot - Final Complete UI
+-- 3 pages: Main / Start / Settings
+-- Visual feature buttons: Detection, Speed, Flight, Gravity
+-- Settings: Language, Theme
 -- No transparent pages, no empty panels
 
 local Players = game:GetService("Players")
@@ -12,12 +14,12 @@ if not LocalPlayer or not PlayerGui then
     return
 end
 
-if PlayerGui:FindFirstChild("FakeAEggMainGui") then
-    PlayerGui.FakeAEggMainGui:Destroy()
+if PlayerGui:FindFirstChild("FakeAEggFinalGui") then
+    PlayerGui.FakeAEggFinalGui:Destroy()
 end
 
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "FakeAEggMainGui"
+ScreenGui.Name = "FakeAEggFinalGui"
 ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
 ScreenGui.IgnoreGuiInset = true
@@ -34,12 +36,11 @@ MainFrame.Draggable = true
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = true
 
-local OuterBorder = Instance.new("UIStroke")
-OuterBorder.Name = "OuterBorder"
-OuterBorder.Parent = MainFrame
-OuterBorder.Color = Color3.fromRGB(255, 140, 0)
-OuterBorder.Thickness = 3
-OuterBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+local Border = Instance.new("UIStroke")
+Border.Parent = MainFrame
+Border.Color = Color3.fromRGB(255, 140, 0)
+Border.Thickness = 3
+Border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
 local Corner = Instance.new("UICorner")
 Corner.CornerRadius = UDim.new(0, 12)
@@ -82,34 +83,83 @@ local function addButton(parent, pos, size, text, bgColor)
     btn.BorderSizePixel = 0
     btn.ZIndex = 2
 
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 10)
-    btnCorner.Parent = btn
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = btn
 
-    local btnStroke = Instance.new("UIStroke")
-    btnStroke.Thickness = 1
-    btnStroke.Color = Color3.fromRGB(255, 255, 255)
-    btnStroke.Transparency = 0.4
-    btnStroke.Parent = btn
+    local stroke = Instance.new("UIStroke")
+    stroke.Thickness = 1
+    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Transparency = 0.4
+    stroke.Parent = btn
 
     return btn
 end
 
-local StartBtn = addButton(
-    MainFrame,
-    UDim2.new(0.12, 0, 0.38, 0),
-    UDim2.new(0.76, 0, 0, 55),
-    "🚀 Start",
-    Color3.fromRGB(20, 180, 90)
-)
+local function addLabel(parent, pos, size, text, bgColor)
+    local lbl = Instance.new("TextLabel")
+    lbl.Parent = parent
+    lbl.Position = pos
+    lbl.Size = size
+    lbl.Text = text
+    lbl.BackgroundColor3 = bgColor or Color3.fromRGB(35, 35, 45)
+    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    lbl.Font = Enum.Font.SourceSansBold
+    lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Center
+    lbl.ZIndex = 2
 
-local SettingsBtn = addButton(
-    MainFrame,
-    UDim2.new(0.12, 0, 0.68, 0),
-    UDim2.new(0.76, 0, 0, 48),
-    "⚙️ Settings",
-    Color3.fromRGB(85, 85, 90)
-)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = lbl
+
+    return lbl
+end
+
+-- Main page
+local MainPage = Instance.new("Frame")
+MainPage.Parent = MainFrame
+MainPage.Size = UDim2.new(1, 0, 1, -42)
+MainPage.Position = UDim2.new(0, 0, 0, 42)
+MainPage.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+MainPage.BorderSizePixel = 0
+MainPage.ZIndex = 1
+
+local StartBtn = addButton(MainPage, UDim2.new(0.12, 0, 0.18, 0), UDim2.new(0.76, 0, 0, 55), "🚀 Start", Color3.fromRGB(20, 180, 90))
+local SettingsBtn = addButton(MainPage, UDim2.new(0.12, 0, 0.63, 0), UDim2.new(0.76, 0, 0, 48), "⚙️ Settings", Color3.fromRGB(85, 85, 90))
+
+-- Start page
+local StartPage = Instance.new("Frame")
+StartPage.Parent = MainFrame
+StartPage.Size = UDim2.new(1, 0, 1, -42)
+StartPage.Position = UDim2.new(1.5, 0, 0, 42)
+StartPage.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+StartPage.BorderSizePixel = 0
+StartPage.Visible = false
+StartPage.ZIndex = 2
+
+local StartTitle = addLabel(StartPage, UDim2.new(0.08, 0, 0.06, 0), UDim2.new(0.84, 0, 0, 28), "Features", Color3.fromRGB(45, 45, 60))
+
+local DetectionBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.22, 0), UDim2.new(0.84, 0, 0, 34), "🔍 Detection ON", Color3.fromRGB(0, 180, 100))
+local SpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.42, 0), UDim2.new(0.84, 0, 0, 32), "⚡ Speed", Color3.fromRGB(105, 80, 200))
+local FlightBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.58, 0), UDim2.new(0.84, 0, 0, 32), "🛩️ Flight", Color3.fromRGB(70, 150, 255))
+local GravityBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.74, 0), UDim2.new(0.84, 0, 0, 32), "🌍 Gravity", Color3.fromRGB(200, 120, 0))
+local StartBackBtn = addButton(StartPage, UDim2.new(0.12, 0, 0.88, 0), UDim2.new(0.76, 0, 0, 24), "⬅️ Back", Color3.fromRGB(140, 35, 35))
+
+-- Settings page
+local SettingsPage = Instance.new("Frame")
+SettingsPage.Parent = MainFrame
+SettingsPage.Size = UDim2.new(1, 0, 1, -42)
+SettingsPage.Position = UDim2.new(1.5, 0, 0, 42)
+SettingsPage.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+SettingsPage.BorderSizePixel = 0
+SettingsPage.Visible = false
+SettingsPage.ZIndex = 2
+
+local SettingsTitle = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.08, 0), UDim2.new(0.84, 0, 0, 30), "Settings", Color3.fromRGB(45, 45, 60))
+local LangBtn = addButton(SettingsPage, UDim2.new(0.08, 0, 0.28, 0), UDim2.new(0.84, 0, 0, 32), "🌐 Language", Color3.fromRGB(100, 60, 150))
+local ThemeBtn = addButton(SettingsPage, UDim2.new(0.08, 0, 0.48, 0), UDim2.new(0.84, 0, 0, 32), "🎨 Theme", Color3.fromRGB(200, 110, 0))
+local SettingsBackBtn = addButton(SettingsPage, UDim2.new(0.12, 0, 0.78, 0), UDim2.new(0.76, 0, 0, 30), "⬅️ Back", Color3.fromRGB(140, 35, 35))
 
 local function animatePress(button)
     local originalSize = button.Size
@@ -126,19 +176,67 @@ local function animatePress(button)
     end)
 end
 
-animatePress(StartBtn)
-animatePress(SettingsBtn)
-animatePress(CloseBtn)
+for _, btn in ipairs({
+    StartBtn, SettingsBtn,
+    DetectionBtn, SpeedBtn, FlightBtn, GravityBtn, StartBackBtn,
+    LangBtn, ThemeBtn, SettingsBackBtn, CloseBtn
+}) do
+    animatePress(btn)
+end
+
+local function switchTo(page)
+    MainPage.Visible = false
+    StartPage.Visible = false
+    SettingsPage.Visible = false
+    page.Visible = true
+end
+
+StartBtn.MouseButton1Click:Connect(function()
+    switchTo(StartPage)
+end)
+
+SettingsBtn.MouseButton1Click:Connect(function()
+    switchTo(SettingsPage)
+end)
+
+StartBackBtn.MouseButton1Click:Connect(function()
+    switchTo(MainPage)
+end)
+
+SettingsBackBtn.MouseButton1Click:Connect(function()
+    switchTo(MainPage)
+end)
 
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
-StartBtn.MouseButton1Click:Connect(function()
-    StartBtn.Text = "✅ Started"
-    StartBtn.BackgroundColor3 = Color3.fromRGB(0, 160, 90)
+local detectionOn = true
+
+DetectionBtn.MouseButton1Click:Connect(function()
+    detectionOn = not detectionOn
+    DetectionBtn.Text = detectionOn and "🔍 Detection ON" or "🔍 Detection OFF"
+    DetectionBtn.BackgroundColor3 = detectionOn and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(85, 85, 90)
 end)
 
-SettingsBtn.MouseButton1Click:Connect(function()
-    SettingsBtn.Text = "⚙️ Settings"
+SpeedBtn.MouseButton1Click:Connect(function()
+    SpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
 end)
+
+FlightBtn.MouseButton1Click:Connect(function()
+    FlightBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
+end)
+
+GravityBtn.MouseButton1Click:Connect(function()
+    GravityBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
+end)
+
+LangBtn.MouseButton1Click:Connect(function()
+    LangBtn.Text = "🌐 Language: Arabic"
+end)
+
+ThemeBtn.MouseButton1Click:Connect(function()
+    ThemeBtn.Text = "🎨 Theme: Neon"
+end)
+
+switchTo(MainPage)

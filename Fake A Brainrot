@@ -1,7 +1,7 @@
--- Fake A Brainrot - UI Only (Ready for features)
--- 3 pages: Main / Start / Settings
--- Buttons for: Speed / Flight / Gravity / Max Speed 250 / Flight Max 50
--- No actual exploit logic, only UI and state
+-- Fake A Brainrot - Fixed UI
+-- UI only, no actual gameplay modification
+-- Pages: Main / Start / Settings
+-- Features visual buttons: Speed / Flight / Gravity / Max Speed 250 / Flight Max 50
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -34,14 +34,14 @@ MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.ClipsDescendants = true
 
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0, 14)
-Corner.Parent = MainFrame
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 14)
+FrameCorner.Parent = MainFrame
 
-local Stroke = Instance.new("UIStroke")
-Stroke.Thickness = 2.5
-Stroke.Color = Color3.fromRGB(255, 140, 0)
-Stroke.Parent = MainFrame
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Thickness = 2.5
+UIStroke.Color = Color3.fromRGB(255, 140, 0)
+UIStroke.Parent = MainFrame
 
 local Title = Instance.new("TextLabel")
 Title.Parent = MainFrame
@@ -106,9 +106,9 @@ local function addButton(parent, pos, size, text, bgColor)
     btn.TextSize = 14
     btn.ZIndex = 3
 
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, 8)
-    c.Parent = btn
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = btn
 
     return btn
 end
@@ -126,41 +126,39 @@ local function addLabel(parent, pos, size, text, bgColor)
     label.TextXAlignment = Enum.TextXAlignment.Center
     label.ZIndex = 2
 
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, 8)
-    c.Parent = label
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = label
 
     return label
 end
 
--- Main Page
+-- Main page
 local StartBtn = addButton(MainPage, UDim2.new(0.08, 0, 0.18, 0), UDim2.new(0.84, 0, 0, 45), "🚀 Start", Color3.fromRGB(0, 180, 100))
 local SettingsNavBtn = addButton(MainPage, UDim2.new(0.08, 0, 0.58, 0), UDim2.new(0.84, 0, 0, 42), "⚙️ Settings", Color3.fromRGB(55, 55, 65))
 
--- Start Page
-local StartTitle = addLabel(StartPage, UDim2.new(0.08, 0, 0.08, 0), UDim2.new(0.84, 0, 0, 36), "Start", Color3.fromRGB(40, 40, 55))
-local SpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.28, 0), UDim2.new(0.84, 0, 0, 36), "⚡ Speed", Color3.fromRGB(105, 80, 200))
-local FlightBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.42, 0), UDim2.new(0.84, 0, 0, 36), "🛩️ Flight", Color3.fromRGB(70, 150, 255))
-local GravityBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.56, 0), UDim2.new(0.84, 0, 0, 36), "🌍 Gravity", Color3.fromRGB(200, 120, 0))
-local MaxSpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.70, 0), UDim2.new(0.84, 0, 0, 32), "🔢 Max Speed 250", Color3.fromRGB(35, 120, 80))
-local FlightMaxBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.82, 0), UDim2.new(0.84, 0, 0, 32), "🛰️ Flight Max 50", Color3.fromRGB(150, 70, 70))
-local StartBackBtn = addButton(StartPage, UDim2.new(0.1, 0, 0.92, 0), UDim2.new(0.8, 0, 0, 28), "⬅️ Back", Color3.fromRGB(140, 35, 35))
+-- Start page
+local StartTitle = addLabel(StartPage, UDim2.new(0.08, 0, 0.06, 0), UDim2.new(0.84, 0, 0, 32), "Start", Color3.fromRGB(40, 40, 55))
+local SpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.22, 0), UDim2.new(0.84, 0, 0, 32), "⚡ Speed", Color3.fromRGB(105, 80, 200))
+local FlightBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.38, 0), UDim2.new(0.84, 0, 0, 32), "🛩️ Flight", Color3.fromRGB(70, 150, 255))
+local GravityBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.54, 0), UDim2.new(0.84, 0, 0, 32), "🌍 Gravity", Color3.fromRGB(200, 120, 0))
+local MaxSpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.70, 0), UDim2.new(0.84, 0, 0, 30), "🔢 Max Speed 250", Color3.fromRGB(35, 120, 80))
+local FlightMaxBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.82, 0), UDim2.new(0.84, 0, 0, 30), "🛰️ Flight Max 50", Color3.fromRGB(150, 70, 70))
+local StartBackBtn = addButton(StartPage, UDim2.new(0.12, 0, 0.92, 0), UDim2.new(0.76, 0, 0, 24), "⬅️ Back", Color3.fromRGB(140, 35, 35))
 
--- Settings Page
-local SettingsTitle = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.08, 0), UDim2.new(0.84, 0, 0, 36), "Settings", Color3.fromRGB(40, 40, 55))
+-- Settings page
+local SettingsTitle = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.08, 0), UDim2.new(0.84, 0, 0, 32), "Settings", Color3.fromRGB(40, 40, 55))
+local MaxSpeedLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.25, 0), UDim2.new(0.84, 0, 0, 30), "Max Speed: 250", Color3.fromRGB(25, 110, 70))
+local FlightMaxLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.40, 0), UDim2.new(0.84, 0, 0, 30), "Flight Max: 50", Color3.fromRGB(25, 85, 110))
+local ThemeLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.55, 0), UDim2.new(0.84, 0, 0, 30), "Theme: Neon", Color3.fromRGB(110, 70, 130))
+local SettingsBackBtn = addButton(SettingsPage, UDim2.new(0.12, 0, 0.78, 0), UDim2.new(0.76, 0, 0, 34), "⬅️ Back", Color3.fromRGB(140, 35, 35))
 
-local MaxSpeedLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.25, 0), UDim2.new(0.84, 0, 0, 32), "Max Speed: 250", Color3.fromRGB(25, 110, 70))
-local FlightMaxLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.40, 0), UDim2.new(0.84, 0, 0, 32), "Flight Max: 50", Color3.fromRGB(25, 85, 110))
-local ThemeLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.55, 0), UDim2.new(0.84, 0, 0, 32), "Theme: Neon", Color3.fromRGB(110, 70, 130))
-
-local SettingsBackBtn = addButton(SettingsPage, UDim2.new(0.1, 0, 0.78, 0), UDim2.new(0.8, 0, 0, 40), "⬅️ Back", Color3.fromRGB(140, 35, 35))
-
--- Button click effect
+-- Press effect
 local function animatePress(button)
     local originalSize = button.Size
     button.MouseButton1Down:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.08), {
-            Size = originalSize - UDim2.new(0, 10, 0, 4)
+            Size = originalSize - UDim2.new(0, 8, 0, 4)
         }):Play()
     end)
 
@@ -207,39 +205,29 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- Demo feature button toggles (UI only)
-local activeFeatures = {
+-- Visual feature toggles only
+local featureState = {
     Speed = false,
     Flight = false,
     Gravity = false
 }
 
-local function setFeatureButtonState(button, enabled)
-    if enabled then
-        button.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
-        button.Text = button.Text:gsub("⚡", "✅"):gsub("🛩️", "✅"):gsub("🌍", "✅")
-    else
-        button.BackgroundColor3 = Color3.fromRGB(105, 80, 200)
-        button.Text = button.Text:gsub("✅", "⚡"):gsub("✅", "🛩️"):gsub("✅", "🌍")
-    end
-end
-
 SpeedBtn.MouseButton1Click:Connect(function()
-    activeFeatures.Speed = not activeFeatures.Speed
-    SpeedBtn.BackgroundColor3 = activeFeatures.Speed and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(105, 80, 200)
-    SpeedBtn.Text = activeFeatures.Speed and "⚡ Speed ON" or "⚡ Speed"
+    featureState.Speed = not featureState.Speed
+    SpeedBtn.BackgroundColor3 = featureState.Speed and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(105, 80, 200)
+    SpeedBtn.Text = featureState.Speed and "⚡ Speed ON" or "⚡ Speed"
 end)
 
 FlightBtn.MouseButton1Click:Connect(function()
-    activeFeatures.Flight = not activeFeatures.Flight
-    FlightBtn.BackgroundColor3 = activeFeatures.Flight and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(70, 150, 255)
-    FlightBtn.Text = activeFeatures.Flight and "🛩️ Flight ON" or "🛩️ Flight"
+    featureState.Flight = not featureState.Flight
+    FlightBtn.BackgroundColor3 = featureState.Flight and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(70, 150, 255)
+    FlightBtn.Text = featureState.Flight and "🛩️ Flight ON" or "🛩️ Flight"
 end)
 
 GravityBtn.MouseButton1Click:Connect(function()
-    activeFeatures.Gravity = not activeFeatures.Gravity
-    GravityBtn.BackgroundColor3 = activeFeatures.Gravity and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(200, 120, 0)
-    GravityBtn.Text = activeFeatures.Gravity and "🌍 Gravity ON" or "🌍 Gravity"
+    featureState.Gravity = not featureState.Gravity
+    GravityBtn.BackgroundColor3 = featureState.Gravity and Color3.fromRGB(0, 180, 100) or Color3.fromRGB(200, 120, 0)
+    GravityBtn.Text = featureState.Gravity and "🌍 Gravity ON" or "🌍 Gravity"
 end)
 
 MaxSpeedBtn.MouseButton1Click:Connect(function()

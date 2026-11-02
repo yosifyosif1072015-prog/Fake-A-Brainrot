@@ -1,7 +1,5 @@
--- Fake A Brainrot - Fixed UI
--- UI only, no actual gameplay modification
--- Pages: Main / Start / Settings
--- Features visual buttons: Speed / Flight / Gravity / Max Speed 250 / Flight Max 50
+-- Fake A Brainrot - Fixed visible UI
+-- UI only, safe, visible buttons, 3 pages: Main / Start / Settings
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -34,14 +32,14 @@ MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.ClipsDescendants = true
 
-local FrameCorner = Instance.new("UICorner")
-FrameCorner.CornerRadius = UDim.new(0, 14)
-FrameCorner.Parent = MainFrame
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 14)
+Corner.Parent = MainFrame
 
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Thickness = 2.5
-UIStroke.Color = Color3.fromRGB(255, 140, 0)
-UIStroke.Parent = MainFrame
+local Stroke = Instance.new("UIStroke")
+Stroke.Thickness = 2.5
+Stroke.Color = Color3.fromRGB(255, 140, 0)
+Stroke.Parent = MainFrame
 
 local Title = Instance.new("TextLabel")
 Title.Parent = MainFrame
@@ -75,14 +73,16 @@ local MainPage = Instance.new("Frame")
 MainPage.Parent = MainFrame
 MainPage.Size = UDim2.new(1, 0, 1, -45)
 MainPage.Position = UDim2.new(0, 0, 0, 45)
-MainPage.BackgroundTransparency = 1
+MainPage.BackgroundColor3 = Color3.fromRGB(10, 10, 18)
+MainPage.BorderSizePixel = 0
 MainPage.ZIndex = 2
 
 local StartPage = Instance.new("Frame")
 StartPage.Parent = MainFrame
 StartPage.Size = UDim2.new(1, 0, 1, -45)
 StartPage.Position = UDim2.new(1.3, 0, 0, 45)
-StartPage.BackgroundTransparency = 1
+StartPage.BackgroundColor3 = Color3.fromRGB(10, 10, 18)
+StartPage.BorderSizePixel = 0
 StartPage.Visible = false
 StartPage.ZIndex = 2
 
@@ -90,7 +90,8 @@ local SettingsPage = Instance.new("Frame")
 SettingsPage.Parent = MainFrame
 SettingsPage.Size = UDim2.new(1, 0, 1, -45)
 SettingsPage.Position = UDim2.new(1.3, 0, 0, 45)
-SettingsPage.BackgroundTransparency = 1
+SettingsPage.BackgroundColor3 = Color3.fromRGB(10, 10, 18)
+SettingsPage.BorderSizePixel = 0
 SettingsPage.Visible = false
 SettingsPage.ZIndex = 2
 
@@ -133,27 +134,27 @@ local function addLabel(parent, pos, size, text, bgColor)
     return label
 end
 
--- Main page
+-- Main page buttons
 local StartBtn = addButton(MainPage, UDim2.new(0.08, 0, 0.18, 0), UDim2.new(0.84, 0, 0, 45), "🚀 Start", Color3.fromRGB(0, 180, 100))
 local SettingsNavBtn = addButton(MainPage, UDim2.new(0.08, 0, 0.58, 0), UDim2.new(0.84, 0, 0, 42), "⚙️ Settings", Color3.fromRGB(55, 55, 65))
 
--- Start page
-local StartTitle = addLabel(StartPage, UDim2.new(0.08, 0, 0.06, 0), UDim2.new(0.84, 0, 0, 32), "Start", Color3.fromRGB(40, 40, 55))
-local SpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.22, 0), UDim2.new(0.84, 0, 0, 32), "⚡ Speed", Color3.fromRGB(105, 80, 200))
-local FlightBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.38, 0), UDim2.new(0.84, 0, 0, 32), "🛩️ Flight", Color3.fromRGB(70, 150, 255))
-local GravityBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.54, 0), UDim2.new(0.84, 0, 0, 32), "🌍 Gravity", Color3.fromRGB(200, 120, 0))
-local MaxSpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.70, 0), UDim2.new(0.84, 0, 0, 30), "🔢 Max Speed 250", Color3.fromRGB(35, 120, 80))
-local FlightMaxBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.82, 0), UDim2.new(0.84, 0, 0, 30), "🛰️ Flight Max 50", Color3.fromRGB(150, 70, 70))
-local StartBackBtn = addButton(StartPage, UDim2.new(0.12, 0, 0.92, 0), UDim2.new(0.76, 0, 0, 24), "⬅️ Back", Color3.fromRGB(140, 35, 35))
+-- Start page title + buttons
+local StartTitle = addLabel(StartPage, UDim2.new(0.08, 0, 0.06, 0), UDim2.new(0.84, 0, 0, 30), "Start", Color3.fromRGB(40, 40, 55))
+local SpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.2, 0), UDim2.new(0.84, 0, 0, 30), "⚡ Speed", Color3.fromRGB(105, 80, 200))
+local FlightBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.35, 0), UDim2.new(0.84, 0, 0, 30), "🛩️ Flight", Color3.fromRGB(70, 150, 255))
+local GravityBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.50, 0), UDim2.new(0.84, 0, 0, 30), "🌍 Gravity", Color3.fromRGB(200, 120, 0))
+local MaxSpeedBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.65, 0), UDim2.new(0.84, 0, 0, 26), "🔢 Max Speed 250", Color3.fromRGB(35, 120, 80))
+local FlightMaxBtn = addButton(StartPage, UDim2.new(0.08, 0, 0.78, 0), UDim2.new(0.84, 0, 0, 26), "🛰️ Flight Max 50", Color3.fromRGB(150, 70, 70))
+local StartBackBtn = addButton(StartPage, UDim2.new(0.12, 0, 0.90, 0), UDim2.new(0.76, 0, 0, 22), "⬅️ Back", Color3.fromRGB(140, 35, 35))
 
 -- Settings page
-local SettingsTitle = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.08, 0), UDim2.new(0.84, 0, 0, 32), "Settings", Color3.fromRGB(40, 40, 55))
-local MaxSpeedLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.25, 0), UDim2.new(0.84, 0, 0, 30), "Max Speed: 250", Color3.fromRGB(25, 110, 70))
-local FlightMaxLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.40, 0), UDim2.new(0.84, 0, 0, 30), "Flight Max: 50", Color3.fromRGB(25, 85, 110))
-local ThemeLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.55, 0), UDim2.new(0.84, 0, 0, 30), "Theme: Neon", Color3.fromRGB(110, 70, 130))
-local SettingsBackBtn = addButton(SettingsPage, UDim2.new(0.12, 0, 0.78, 0), UDim2.new(0.76, 0, 0, 34), "⬅️ Back", Color3.fromRGB(140, 35, 35))
+local SettingsTitle = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.08, 0), UDim2.new(0.84, 0, 0, 30), "Settings", Color3.fromRGB(40, 40, 55))
+local MaxSpeedLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.25, 0), UDim2.new(0.84, 0, 0, 28), "Max Speed: 250", Color3.fromRGB(25, 110, 70))
+local FlightMaxLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.40, 0), UDim2.new(0.84, 0, 0, 28), "Flight Max: 50", Color3.fromRGB(25, 85, 110))
+local ThemeLabel = addLabel(SettingsPage, UDim2.new(0.08, 0, 0.55, 0), UDim2.new(0.84, 0, 0, 28), "Theme: Neon", Color3.fromRGB(110, 70, 130))
+local SettingsBackBtn = addButton(SettingsPage, UDim2.new(0.12, 0, 0.78, 0), UDim2.new(0.76, 0, 0, 30), "⬅️ Back", Color3.fromRGB(140, 35, 35))
 
--- Press effect
+-- Soundless click effect
 local function animatePress(button)
     local originalSize = button.Size
     button.MouseButton1Down:Connect(function()
@@ -177,7 +178,6 @@ for _, btn in ipairs({
     animatePress(btn)
 end
 
--- Navigation
 local function switchTo(page)
     MainPage.Visible = false
     StartPage.Visible = false
@@ -205,7 +205,6 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- Visual feature toggles only
 local featureState = {
     Speed = false,
     Flight = false,

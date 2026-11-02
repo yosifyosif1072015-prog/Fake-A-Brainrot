@@ -1,4 +1,4 @@
--- Fake a Egg Advanced GUI with Settings & Dynamic Effects
+-- Fake a Egg Advanced GUI (Fixed Version)
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local FrameCorner = Instance.new("UICorner")
@@ -19,9 +19,15 @@ local LangBtn = Instance.new("TextButton")
 local ColorBtn = Instance.new("TextButton")
 local BackBtn = Instance.new("TextButton")
 
--- إعدادات الواجهة الأساسية
-ScreenGui.Parent = game.CoreGui
-MainFrame.Name = "XenoAdvancedEggGui"
+-- [تعديل الأمان]: التحقق من بيئة التشغيل للحقن المضمون
+local success, coreGui = pcall(function() return game:GetService("CoreGui") end)
+if success and coreGui then
+    ScreenGui.Parent = coreGui
+else
+    ScreenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+end
+
+MainFrame.Name = "XenoAdvancedEggGuiFixed"
 MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 MainFrame.Position = UDim2.new(0.5, -140, 0.4, -80)
@@ -45,7 +51,7 @@ local function applyRGBEffect(textLabel)
     end)
 end
 
--- تأثيرات حركية (Animations) عند الضغط على الأزرار والتنقل
+-- تأثيرات حركية (Animations) عند الحوم فوق الأزرار
 local TweenService = game:GetService("TweenService")
 local function applyButtonEffects(button)
     button.MouseEnter:Connect(function()
@@ -56,7 +62,7 @@ local function applyButtonEffects(button)
     end)
 end
 
--- زر الإغلاق الذكي
+-- زر الإغلاق
 CloseBtn.Parent = MainFrame
 CloseBtn.Position = UDim2.new(0.88, 0, 0.02, 0)
 CloseBtn.Size = UDim2.new(0, 25, 0, 25)
@@ -64,7 +70,7 @@ CloseBtn.Text = "X"
 CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
 CloseBtn.BackgroundTransparency = 1
 CloseBtn.TextSize = 16
-CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.Font = Enum.Font.Arial
 CloseBtn.ZIndex = 5
 CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
@@ -80,7 +86,7 @@ Title.Size = UDim2.new(1, 0, 0, 40)
 Title.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
 Title.Text = "🥚 Fake a Egg | رادار البيض"
 Title.TextSize = 14
-Title.Font = Enum.Font.SourceSansBold
+Title.Font = Enum.Font.Arial
 Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 14)
 applyRGBEffect(Title)
 
@@ -90,7 +96,7 @@ ActiveBtn.Size = UDim2.new(0.9, 0, 0, 42)
 ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
 ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
 ActiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ActiveBtn.Font = Enum.Font.SourceSansBold
+ActiveBtn.Font = Enum.Font.Arial
 ActiveBtn.TextSize = 12
 Instance.new("UICorner", ActiveBtn).CornerRadius = UDim.new(0, 8)
 applyButtonEffects(ActiveBtn)
@@ -101,7 +107,7 @@ SettingsBtn.Size = UDim2.new(0.9, 0, 0, 38)
 SettingsBtn.Text = "⚙️ الإعدادات / Settings"
 SettingsBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
 SettingsBtn.TextColor3 = Color3.fromRGB(220, 220, 220)
-SettingsBtn.Font = Enum.Font.SourceSansBold
+SettingsBtn.Font = Enum.Font.Arial
 SettingsBtn.TextSize = 12
 Instance.new("UICorner", SettingsBtn).CornerRadius = UDim.new(0, 8)
 applyButtonEffects(SettingsBtn)
@@ -119,17 +125,17 @@ SettingsTitle.Size = UDim2.new(1, 0, 0, 40)
 SettingsTitle.BackgroundColor3 = Color3.fromRGB(25, 20, 35)
 SettingsTitle.Text = "⚙️ الإعدادات | Settings"
 SettingsTitle.TextSize = 14
-SettingsTitle.Font = Enum.Font.SourceSansBold
+SettingsTitle.Font = Enum.Font.Arial
 Instance.new("UICorner", SettingsTitle).CornerRadius = UDim.new(0, 14)
 applyRGBEffect(SettingsTitle)
 
 LangBtn.Parent = SettingsTab
 LangBtn.Position = UDim2.new(0.05, 0, 0.32, 0)
 LangBtn.Size = UDim2.new(0.42, 0, 0, 38)
-LangBtn.Text = "🌐 اللغة: العربية"
+LangBtn.Text = "🌐 : العربية"
 LangBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 75)
 LangBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-LangBtn.Font = Enum.Font.SourceSansBold
+LangBtn.Font = Enum.Font.Arial
 LangBtn.TextSize = 12
 Instance.new("UICorner", LangBtn).CornerRadius = UDim.new(0, 8)
 applyButtonEffects(LangBtn)
@@ -140,7 +146,7 @@ ColorBtn.Size = UDim2.new(0.42, 0, 0, 38)
 ColorBtn.Text = "🎨 المظهر: داكن"
 ColorBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 75)
 ColorBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ColorBtn.Font = Enum.Font.SourceSansBold
+ColorBtn.Font = Enum.Font.Arial
 ColorBtn.TextSize = 12
 Instance.new("UICorner", ColorBtn).CornerRadius = UDim.new(0, 8)
 applyButtonEffects(ColorBtn)
@@ -151,16 +157,15 @@ BackBtn.Size = UDim2.new(0.9, 0, 0, 38)
 BackBtn.Text = "🔙 العودة للقائمة الرئيسية"
 BackBtn.BackgroundColor3 = Color3.fromRGB(60, 40, 40)
 BackBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
-BackBtn.Font = Enum.Font.SourceSansBold
+BackBtn.Font = Enum.Font.Arial
 BackBtn.TextSize = 12
 Instance.new("UICorner", BackBtn).CornerRadius = UDim.new(0, 8)
 applyButtonEffects(BackBtn)
 
 --------------------------------------
--- [ إنيميشن الانتقال السلس بين الصفحات ]
+-- [ الانتقال بين الصفحات ]
 --------------------------------------
 local function switchTab(toHide, toShow)
-    TweenService:Create(MainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = UDim2.new(0, 280, 0, 180)}):Play()
     toHide.Visible = false
     toShow.Visible = true
 end
@@ -169,9 +174,11 @@ SettingsBtn.MouseButton1Click:Connect(function() switchTab(MainTab, SettingsTab)
 BackBtn.MouseButton1Click:Connect(function() switchTab(SettingsTab, MainTab) end)
 
 --------------------------------------
--- [ نظام تحويل اللغة المستقر ]
+-- [ نظام تحويل اللغة ]
 --------------------------------------
 local currentLang = "AR"
+local isRunning = false
+
 LangBtn.MouseButton1Click:Connect(function()
     if currentLang == "AR" then
         currentLang = "EN"
@@ -201,7 +208,7 @@ LangBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------
--- [ تحويل ألوان المظهر والـ Themes ]
+-- [ تحويل ألوان المظهر ]
 --------------------------------------
 local currentTheme = "Dark"
 ColorBtn.MouseButton1Click:Connect(function()
@@ -223,7 +230,7 @@ ColorBtn.MouseButton1Click:Connect(function()
 end)
 
 --------------------------------------
--- [ محرك الرادار والـ ESP المطور ]
+-- [ محرك الرادار والـ ESP الأساسي ]
 --------------------------------------
 local TargetContainer = workspace:FindFirstChild("XenoPartESPContainer") or Instance.new("Folder")
 TargetContainer.Name = "XenoPartESPContainer"
@@ -261,7 +268,7 @@ local function createTargetESP(rootPart, text, color)
         label.Text = text
         label.TextColor3 = color
         label.TextSize = 15
-        label.Font = Enum.Font.SourceSansBold
+        label.Font = Enum.Font.Arial
         label.TextStrokeTransparency = 0
         
         task.spawn(function()

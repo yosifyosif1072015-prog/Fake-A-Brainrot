@@ -1,0 +1,152 @@
+-- إنشاء واجهة رسومية بسيطة جداً بزر واحد لـ Fake a Egg
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local FrameCorner = Instance.new("UICorner")
+local Title = Instance.new("TextLabel")
+local ActiveBtn = Instance.new("TextButton")
+local BtnCorner = Instance.new("UICorner")
+local CloseBtn = Instance.new("TextButton")
+
+ScreenGui.Parent = game.CoreGui
+MainFrame.Name = "FakeAEggRadarGui"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+MainFrame.Position = UDim2.new(0.5, -125, 0.4, -50)
+MainFrame.Size = UDim2.new(0, 250, 0, 130)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+FrameCorner.CornerRadius = UDim.new(0, 12)
+FrameCorner.Parent = MainFrame
+
+Title.Parent = MainFrame
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(30, 25, 40)
+Title.Text = "🥚 Fake a Egg | رادار البيض المزيف"
+Title.TextColor3 = Color3.fromRGB(255, 140, 0)
+Title.TextSize = 13
+Title.Font = Enum.Font.SourceSansBold
+
+local TitleCorner = Instance.new("UICorner", Title)
+TitleCorner.CornerRadius = UDim.new(0, 12)
+
+CloseBtn.Parent = MainFrame
+CloseBtn.Position = UDim2.new(0.85, 0, 0, 5)
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.TextSize = 16
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+
+-- مجلد مستقل لحفظ علامات الرادار منعاً لأي لاغ في السيرفر
+local TargetContainer = workspace:FindFirstChild("XenoPartESPContainer") or Instance.new("Folder")
+TargetContainer.Name = "XenoPartESPContainer"
+TargetContainer.Parent = workspace
+
+-- دالة تركيب الرادار فوق موقع اللاعب المخفي ليتعقب حركته
+local function createTargetESP(rootPart, text, color)
+    local idName = rootPart:GetDebugId() .. "_PartHider"
+    if not TargetContainer:FindFirstChild(idName) then
+        local trackingFolder = Instance.new("Folder")
+        trackingFolder.Name = idName
+        trackingFolder.Parent = TargetContainer
+
+        -- إنشاء هالة كروية حمراء واضحة ونظيفة
+        local sphere = Instance.new("SphereHandleAdornment")
+        sphere.Name = "SmartSphere"
+        sphere.Adornee = rootPart
+        sphere.Radius = 3.5
+        sphere.Color3 = color
+        sphere.AlwaysOnTop = true -- لكي تراه من خلف كل الجدران والأرضيات
+        sphere.ZIndex = 10
+        sphere.Transparency = 0.4
+        sphere.Parent = trackingFolder
+
+        -- لوحة النص العائمة فوق الرادار
+        local billboard = Instance.new("BillboardGui")
+        billboard.Name = "SmartLabel"
+        billboard.Parent = trackingFolder
+        billboard.Size = UDim2.new(0, 180, 0, 45)
+        billboard.Adornee = rootPart
+        billboard.AlwaysOnTop = true
+        billboard.StudsOffset = Vector3.new(0, 5, 0)
+
+        local label = Instance.new("TextLabel")
+        label.Parent = billboard
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = color
+        label.TextSize = 15
+        label.Font = Enum.Font.SourceSansBold
+        label.TextStrokeTransparency = 0
+        
+        task.spawn(function()
+            while rootPart and rootPart.Parent and trackingFolder and trackingFolder.Parent do task.wait(1) end
+            if trackingFolder then trackingFolder:Destroy() end
+        end)
+    end
+end
+
+local isRunning = false
+local loopThread = nil
+
+ActiveBtn.Parent = MainFrame
+ActiveBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
+ActiveBtn.Size = UDim2.new(0.8, 0, 0, 45)
+ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
+ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+ActiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ActiveBtn.Font = Enum.Font.SourceSansBold
+ActiveBtn.TextSize = 11
+
+local BtnCorner = Instance.new("UICorner", ActiveBtn)
+BtnCorner.CornerRadius = UDim.new(0, 8)
+
+ActiveBtn.MouseButton1Click:Connect(function()
+    isRunning = not isRunning
+    if isRunning then
+        ActiveBtn.Text = "🔓 الفحص شغال الحين (اضغط للإلغاء)"
+        ActiveBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        
+        loopThread = task.spawn(function()
+            while isRunning do
+                -- فحص قائمة جميع حسابات اللاعبين الفعليين المتواجدين في السيرفر
+                for _, player in pairs(game.Players:GetPlayers()) do
+                    if player ~= game.Players.LocalPlayer and player.Character then
+                        local char = player.Character
+                        local rootPart = char:FindFirstChild("HumanoidRootPart")
+                        
+                        -- فحص الأجزاء الثلاثة المحددة التي طلبتها للتأكد من حالة الاختفاء والتنكر
+                        local upperTorso = char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso")
+                        local rightLeg = char:FindFirstChild("RightUpperLeg") or char:FindFirstChild("Right Leg")
+                        local leftHand = char:FindFirstChild("LeftHand") or char:FindFirstChild("Left Arm")
+                        
+                        if rootPart and upperTorso and rightLeg and leftHand then
+                            -- التحقق من الشفافية: إذا كانت هذه الأجزاء مخفية برمجياً وتساوي 1
+                            if upperTorso.Transparency > 0.8 and rightLeg.Transparency > 0.8 and leftHand.Transparency > 0.8 then
+                                -- قفل الرادار الأحمر فوراً فوق إحداثيات موقعه كونه بيضة متحولة
+                                createTargetESP(rootPart, "⚠️ بيضة متنكرة ⚠️", Color3.fromRGB(255, 50, 50))
+                            else
+                                -- إذا عاد لشغله الطبيعي أو لم يكن مخفياً يتم تنظيف علامته الحمراء مباشرة
+                                local idName = rootPart:GetDebugId() .. "_PartHider"
+                                if TargetContainer:FindFirstChild(idName) then
+                                    TargetContainer[idName]:Destroy()
+                                end
+                            end
+                        end
+                    end
+                end
+                task.wait(0.4) -- فحص سريع جداً ومستمر لمواكبة التغيرات اللحظية
+            end
+        end)
+    else
+        ActiveBtn.Text = "🔍 رادار كشف البيض المتنكر لجميع اللاعبين"
+        ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+        isRunning = false
+        if loopThread then task.cancel(loopThread) end
+        TargetContainer:ClearAllChildren()
+    end
+end)

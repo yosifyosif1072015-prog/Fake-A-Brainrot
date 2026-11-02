@@ -1,5 +1,5 @@
 -- Fake A Brainrot - Final Fixed Script
--- Safe radar UI with scan-speed control and settings
+-- التحقق الحقيقي: إذا كان 3 أجزاء أو أكثر مختفية في جسم اللاعب -> يعتبر متنكر / Fake Egg
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -131,14 +131,14 @@ MainPage.ZIndex = 2
 local SettingsPage = Instance.new("Frame")
 SettingsPage.Parent = MainFrame
 SettingsPage.Size = UDim2.new(1, 0, 1, -45)
-SettingsPage.Position = UDim2.new(1.5, 0, 0, 45)
+SettingsPage.Position = UDim2.new(1.2, 0, 0, 45)
 SettingsPage.BackgroundTransparency = 1
 SettingsPage.Visible = false
 SettingsPage.ZIndex = 2
 
 local ActiveBtn = Instance.new("TextButton")
 ActiveBtn.Parent = MainPage
-ActiveBtn.Position = UDim2.new(0.08, 0, 0.18, 0)
+ActiveBtn.Position = UDim2.new(0.08, 0, 0.15, 0)
 ActiveBtn.Size = UDim2.new(0.84, 0, 0, 50)
 ActiveBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
 ActiveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -152,7 +152,7 @@ ActiveCorner.Parent = ActiveBtn
 
 local SettingsNavButton = Instance.new("TextButton")
 SettingsNavButton.Parent = MainPage
-SettingsNavButton.Position = UDim2.new(0.08, 0, 0.6, 0)
+SettingsNavButton.Position = UDim2.new(0.08, 0, 0.55, 0)
 SettingsNavButton.Size = UDim2.new(0.84, 0, 0, 45)
 SettingsNavButton.BackgroundColor3 = Color3.fromRGB(55, 55, 65)
 SettingsNavButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -163,13 +163,12 @@ local SettingsNavCorner = Instance.new("UICorner")
 SettingsNavCorner.CornerRadius = UDim.new(0, 8)
 SettingsNavCorner.Parent = SettingsNavButton
 
--- Settings controls
 local SpeedLabel = Instance.new("TextLabel")
 SpeedLabel.Parent = SettingsPage
 SpeedLabel.Position = UDim2.new(0.08, 0, 0.08, 0)
-SpeedLabel.Size = UDim2.new(0.84, 0, 0, 24)
+SpeedLabel.Size = UDim2.new(0.84, 0, 0, 22)
 SpeedLabel.BackgroundTransparency = 1
-SpeedLabel.Text = "Scan Speed: 0.40s"
+SpeedLabel.Text = "سرعة الفحص: 2.00s"
 SpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 SpeedLabel.Font = Enum.Font.SourceSansBold
 SpeedLabel.TextSize = 14
@@ -177,16 +176,16 @@ SpeedLabel.ZIndex = 2
 
 local SpeedBox = Instance.new("TextBox")
 SpeedBox.Parent = SettingsPage
-SpeedBox.Position = UDim2.new(0.08, 0, 0.22, 0)
+SpeedBox.Position = UDim2.new(0.08, 0, 0.24, 0)
 SpeedBox.Size = UDim2.new(0.54, 0, 0, 34)
-SpeedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+SpeedBox.BackgroundColor3 = Color3.fromRGB(35, 45, 60)
 SpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-SpeedBox.Text = "0.40"
-SpeedBox.PlaceholderText = "0.40"
-SpeedBox.ClearTextOnFocus = false
-SpeedBox.Font = Enum.Font.SourceSansBold
+SpeedBox.Text = "2.00"
+SpeedBox.PlaceholderText = "2.00"
 SpeedBox.TextSize = 14
+SpeedBox.Font = Enum.Font.SourceSansBold
 SpeedBox.TextXAlignment = Enum.TextXAlignment.Center
+SpeedBox.ClearTextOnFocus = false
 SpeedBox.ZIndex = 2
 local SpeedBoxCorner = Instance.new("UICorner")
 SpeedBoxCorner.CornerRadius = UDim.new(0, 8)
@@ -194,21 +193,21 @@ SpeedBoxCorner.Parent = SpeedBox
 
 local ApplySpeedBtn = Instance.new("TextButton")
 ApplySpeedBtn.Parent = SettingsPage
-ApplySpeedBtn.Position = UDim2.new(0.66, 0, 0.22, 0)
+ApplySpeedBtn.Position = UDim2.new(0.66, 0, 0.24, 0)
 ApplySpeedBtn.Size = UDim2.new(0.26, 0, 0, 34)
-ApplySpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+ApplySpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
 ApplySpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ApplySpeedBtn.Text = "Apply"
+ApplySpeedBtn.Text = "تطبيق"
 ApplySpeedBtn.Font = Enum.Font.SourceSansBold
-ApplySpeedBtn.TextSize = 13
+ApplySpeedBtn.TextSize = 12
 ApplySpeedBtn.ZIndex = 2
-local ApplySpeedCorner = Instance.new("UICorner")
-ApplySpeedCorner.CornerRadius = UDim.new(0, 8)
-ApplySpeedCorner.Parent = ApplySpeedBtn
+local ApplyCorner = Instance.new("UICorner")
+ApplyCorner.CornerRadius = UDim.new(0, 8)
+ApplyCorner.Parent = ApplySpeedBtn
 
 local LangButton = Instance.new("TextButton")
 LangButton.Parent = SettingsPage
-LangButton.Position = UDim2.new(0.08, 0, 0.48, 0)
+LangButton.Position = UDim2.new(0.08, 0, 0.5, 0)
 LangButton.Size = UDim2.new(0.84, 0, 0, 34)
 LangButton.BackgroundColor3 = Color3.fromRGB(100, 60, 150)
 LangButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -221,7 +220,7 @@ LangCorner.Parent = LangButton
 
 local ColorButton = Instance.new("TextButton")
 ColorButton.Parent = SettingsPage
-ColorButton.Position = UDim2.new(0.08, 0, 0.68, 0)
+ColorButton.Position = UDim2.new(0.08, 0, 0.7, 0)
 ColorButton.Size = UDim2.new(0.84, 0, 0, 34)
 ColorButton.BackgroundColor3 = Color3.fromRGB(200, 110, 0)
 ColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -234,7 +233,7 @@ ColorCorner.Parent = ColorButton
 
 local BackButton = Instance.new("TextButton")
 BackButton.Parent = SettingsPage
-BackButton.Position = UDim2.new(0.08, 0, 0.84, 0)
+BackButton.Position = UDim2.new(0.08, 0, 0.86, 0)
 BackButton.Size = UDim2.new(0.84, 0, 0, 34)
 BackButton.BackgroundColor3 = Color3.fromRGB(140, 35, 35)
 BackButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -250,9 +249,9 @@ local isRunning = false
 local detectionThread = nil
 
 local Config = {
-    ScanInterval = 0.4,
+    ScanInterval = 2.0,
     MinInterval = 0.1,
-    MaxInterval = 2.0
+    MaxInterval = 50.0
 }
 
 local function updateLocalization()
@@ -287,12 +286,13 @@ local function updateLocalization()
     end
 end
 
-local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
 
 local function switchPage(fromPage, toPage, direction)
     toPage.Visible = true
-    local fromTarget = direction == "next" and UDim2.new(-1.2, 0, 0, 45) or UDim2.new(1.2, 0, 0, 45)
-    local toTarget = UDim2.new(0, 0, 0, 45)
+
+    local toPageTargetPos = UDim2.new(0, 0, 0, 45)
+    local fromPageTargetPos = direction == "next" and UDim2.new(-1.2, 0, 0, 45) or UDim2.new(1.2, 0, 0, 45)
 
     if direction == "next" then
         toPage.Position = UDim2.new(1.2, 0, 0, 45)
@@ -300,8 +300,8 @@ local function switchPage(fromPage, toPage, direction)
         toPage.Position = UDim2.new(-1.2, 0, 0, 45)
     end
 
-    TweenService:Create(fromPage, tweenInfo, { Position = fromTarget }):Play()
-    local toTween = TweenService:Create(toPage, tweenInfo, { Position = toTarget })
+    TweenService:Create(fromPage, tweenInfo, { Position = fromPageTargetPos }):Play()
+    local toTween = TweenService:Create(toPage, tweenInfo, { Position = toPageTargetPos })
     toTween:Play()
 
     toTween.Completed:Connect(function()
@@ -338,6 +338,13 @@ applyClickEffect(ApplySpeedBtn)
 local TargetContainer = Workspace:FindFirstChild("FakeEggESPContainer") or Instance.new("Folder")
 TargetContainer.Name = "FakeEggESPContainer"
 TargetContainer.Parent = Workspace
+
+local function clearPlayerESP(player)
+    local folder = TargetContainer:FindFirstChild(player.Name .. "_FakeESP")
+    if folder then
+        folder:Destroy()
+    end
+end
 
 local function createRadarMark(rootPart, text, color)
     if not rootPart or not rootPart.Parent then
@@ -425,7 +432,11 @@ local function isPlayerDisguised(player)
         end
     end
 
-    return hiddenCount >= 3
+    if hiddenCount >= 3 then
+        return true
+    end
+
+    return false
 end
 
 local function scanForFakeEggs()
@@ -436,7 +447,7 @@ local function scanForFakeEggs()
                 local rootPart = character:FindFirstChild("HumanoidRootPart")
                 if rootPart then
                     if isPlayerDisguised(player) then
-                        createRadarMark(rootPart, "⚠️ Fake Egg ⚠️", Color3.fromRGB(255, 50, 50))
+                        createRadarMark(rootPart, "⚠️ بيضة متنكرة ⚠️", Color3.fromRGB(255, 50, 50))
                     else
                         local mark = TargetContainer:FindFirstChild(rootPart:GetDebugId() .. "_FakeMark")
                         if mark then
